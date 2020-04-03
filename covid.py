@@ -53,7 +53,7 @@ df['date'] = pd.to_datetime(df['date'])
 df.index = pd.to_datetime(df.date)
 
 
-# In[9]:
+# In[18]:
 
 
 state = ["Massachusetts", "New York", "California"]
@@ -61,11 +61,29 @@ states = [state for state in state for _ in range(2)]
 var = ["cases", "deaths"]
 plot_titles = [s + " " + v for s in state for v in var]
 vals1 = [v for v in var*3]
-vals2 = ["cases", "casesc", "deaths", "deathsc", 
-        "cases", "casesc", "deaths", "deathsc"]
+vals2 = ["casesc", "deathsc", "casesc", 
+        "deathsc", "casesc", "deathsc"]
 
 
-# In[10]:
+# In[19]:
+
+
+vals1
+
+
+# In[20]:
+
+
+vals2
+
+
+# In[ ]:
+
+
+
+
+
+# In[21]:
 
 
 plt.style.use('seaborn-darkgrid')
