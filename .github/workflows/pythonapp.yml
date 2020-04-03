@@ -36,8 +36,11 @@ jobs:
       run: |
         python covid.py
     - name: Save graph that was created
-        uses: actions/upload-artifact@v1
-        with:
-          name: graph
-          path: graph.png
+      uses: actions/upload-artifact@v1
+      with:
+        name: graph
+        path: graph.png
+
+
+
           
