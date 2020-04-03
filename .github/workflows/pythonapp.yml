@@ -30,6 +30,7 @@ jobs:
     - name: Dependencies
       run: |
         pip install pandas
+        pup install matplotlib
     - name: Run daily
       run: |
         python covid.py
