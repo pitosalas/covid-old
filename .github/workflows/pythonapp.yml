@@ -38,8 +38,7 @@ jobs:
     - name: Save graph that was created
       uses: actions/download-artifact@v1
       with:
-        name: graph
-        path: graph.png
+        name: graph.png
 
 
 
