@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[2]:
 
 
 import pandas as pd
@@ -12,7 +12,7 @@ import matplotlib.ticker as ticker
 import numpy as np
 
 
-# In[2]:
+# In[3]:
 
 
 def doubling(readings):
@@ -34,7 +34,7 @@ def doubling(readings):
     return double
 
 
-# In[3]:
+# In[4]:
 
 
 def readfile():
@@ -48,7 +48,7 @@ def readfile():
     return df
 
 
-# In[4]:
+# In[5]:
 
 
 def graph(df):
@@ -77,7 +77,7 @@ def graph(df):
     plt.savefig("graph")
 
 
-# In[5]:
+# In[6]:
 
 
 def calcmerge(state, data):
@@ -90,11 +90,12 @@ def calcmerge(state, data):
     return zipped
 
 
-# In[15]:
+# In[25]:
 
 
-def graphrow(df, state, rows, cols, curr):
-    plt.subplot(rows,cols,curr)
+def graphrow(df, state):
+    plt.rcParams["figure.figsize"] = (14, 5) # (w, h)
+    plt.subplot(1, 2, 1)
     plt.title(state + " count (lower is better)")
     xformatter = mdates.DateFormatter("%m-%d")
     yformatter = ticker.StrMethodFormatter('{x:,.0f}')
@@ -105,39 +106,32 @@ def graphrow(df, state, rows, cols, curr):
     plt.gca().yaxis.set_major_formatter(yformatter)
     plt.legend(['cases', 'deaths'])
 
-    plt.subplot(rows,cols,curr + 1)
+    plt.subplot(1, 2, 2)
     plt.title("days to double (higher is better)")
     plt.plot(df.date, df['dbl cas'])
     plt.plot(df.date, df['dbl deat'])
     plt.gca().xaxis.set_major_formatter(xformatter)
     plt.gca().yaxis.set_major_formatter(yformatter)
     plt.legend(['cases', 'deaths'])
-    plt.savefig("graph" + state)
-    plt.show()
+    plt.savefig("graph" + state.replace(" ", "").lower())
+    plt.clf()
 
 
-# In[16]:
+# In[26]:
 
 
 def graphdbl(dta, state):
     r = calcmerge(state, dta)
     df = pd.DataFrame(r, columns=['date', 'cases', 'deaths', 'dbl cas', 'dbl deat'])
-    plt.style.use('seaborn-darkgrid')
-    plt.rcParams["figure.figsize"] = (14, 5) # (w, h)
-    graphrow(df, state, 1, 2, 1)
+    graphrow(df, state)
 
 
-# In[17]:
+# In[27]:
 
 
 d = readfile()
+
 graphdbl(d,'New York')
 graphdbl(d,'Massachusetts')
 graphdbl(d,'California')
-
-
-# In[ ]:
-
-
-
 
