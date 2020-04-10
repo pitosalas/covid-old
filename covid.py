@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
+# In[1]:
 
 
 import pandas as pd
@@ -12,7 +12,7 @@ import matplotlib.ticker as ticker
 import numpy as np
 
 
-# In[3]:
+# In[2]:
 
 
 def doubling(readings):
@@ -34,7 +34,7 @@ def doubling(readings):
     return double
 
 
-# In[4]:
+# In[3]:
 
 
 def readfile():
@@ -48,7 +48,7 @@ def readfile():
     return df
 
 
-# In[5]:
+# In[4]:
 
 
 def graph(df):
@@ -77,7 +77,7 @@ def graph(df):
     plt.savefig("graph")
 
 
-# In[6]:
+# In[5]:
 
 
 def calcmerge(state, data):
@@ -90,11 +90,10 @@ def calcmerge(state, data):
     return zipped
 
 
-# In[25]:
+# In[6]:
 
 
 def graphrow(df, state):
-    plt.rcParams["figure.figsize"] = (14, 5) # (w, h)
     plt.subplot(1, 2, 1)
     plt.title(state + " count (lower is better)")
     xformatter = mdates.DateFormatter("%m-%d")
@@ -117,7 +116,7 @@ def graphrow(df, state):
     plt.clf()
 
 
-# In[26]:
+# In[7]:
 
 
 def graphdbl(dta, state):
@@ -126,12 +125,26 @@ def graphdbl(dta, state):
     graphrow(df, state)
 
 
-# In[27]:
+# In[8]:
+
+
+def graphprep():
+    plt.rcParams["figure.figsize"] = (10, 3) # (w, h)
+    plt.style.use('seaborn-darkgrid')
+
+
+# In[9]:
 
 
 d = readfile()
-
+graphprep()
 graphdbl(d,'New York')
 graphdbl(d,'Massachusetts')
 graphdbl(d,'California')
+
+
+# In[ ]:
+
+
+
 
