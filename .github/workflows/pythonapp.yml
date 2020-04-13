@@ -36,7 +36,7 @@ jobs:
       run: |
         python covid.py
     - name: What files are there now |
-        ls 
+      run: ls 
     - name: Save graph that was created
       uses: stefanzweifel/git-auto-commit-action@v4.1.2
       with:
