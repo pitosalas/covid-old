@@ -39,10 +39,13 @@ def doubling(readings):
 
 def readfile():
     df = pd.read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv")
-    df = df.loc[(df['state']=="Massachusetts") | (df['state']=="New York")| (df['state']=="California")]
+    df = df.loc[(df['state']=="Massachusetts") | 
+                (df['state']=="New York")| 
+                (df['state']=="District of Columbia")| 
+                (df['state']=="California")]
     df = df.loc[df['date'] > "2020-03-15"]
-    df = df.assign(casesc=df['cases'].diff(3))
-    df = df.assign(deathsc=df['deaths'].diff(3))
+    df = df.assign(casesc=df['cases'].diff(4))
+    df = df.assign(deathsc=df['deaths'].diff(4))
     df['date'] = pd.to_datetime(df['date'])
     df.index = pd.to_datetime(df.date)
     return df
@@ -133,13 +136,14 @@ def graphprep():
     plt.style.use('seaborn-darkgrid')
 
 
-# In[9]:
+# In[10]:
 
 
 d = readfile()
 graphprep()
 graphdbl(d,'New York')
 graphdbl(d,'Massachusetts')
+graphdbl(d,'District of Columbia')
 graphdbl(d,'California')
 
 
