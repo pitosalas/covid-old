@@ -35,7 +35,7 @@ jobs:
     - name: Run daily
       run: |
         python covid.py
-    - name: |
+    - name: What files are there now |
         ls 
     - name: Save graph that was created
       uses: stefanzweifel/git-auto-commit-action@v4.1.2
