@@ -10,12 +10,14 @@ import seaborn as sns
 import matplotlib.dates as mdates
 import matplotlib.ticker as ticker
 import numpy as np
+from datetime import datetime
 
 
 # In[2]:
 
 
-def doubling(readings):
+def doubling(indata):
+    readings = indata.to_numpy()
     readingsLength = len(readings)
     double = np.zeros(readingsLength)
     double[:] = np.NaN
@@ -31,120 +33,67 @@ def doubling(readings):
                 break
             else:
                 count = count+1
-    return double
+    outdata = pd.Series(data=double, name=indata.name, index=indata.index)
+    return outdata
 
 
-# In[3]:
+# In[9]:
 
 
-def readfile():
-    df = pd.read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv")
-    df = df.loc[(df['state']=="Massachusetts") | 
-                (df['state']=="New York")| 
-                (df['state']=="District of Columbia")| 
-                (df['state']=="California")]
+def compute(df, states, variables):
+    df = df.loc[(df['state'].isin(states))]
     df = df.loc[df['date'] > "2020-03-15"]
-    df = df.assign(casesc=df['cases'].diff(4))
-    df = df.assign(deathsc=df['deaths'].diff(4))
+    df = df.assign(casesc=df['cases'].diff(len(states)))
+    df = df.assign(deathsc=df['deaths'].diff(len(states)))
+    df = df.assign(deathsd=df.groupby('state')['deaths'].apply(doubling))
+    df = df.assign(casesd=df.groupby('state')['cases'].apply(doubling))
     df['date'] = pd.to_datetime(df['date'])
-    df.index = pd.to_datetime(df.date)
+    df = df.melt(id_vars=['date', 'state'])
+    df = df[df.variable.isin(variables)]
     return df
 
 
-# In[4]:
+# In[48]:
 
 
-def graph(df):
-    state = ["Massachusetts", "New York", "California"]
-    states = [state for state in state for _ in range(2)]
-    var = ["cases", "deaths"]
-    plot_titles = [s + " " + v for s in state for v in var]
-    vals1 = [v for v in var*3]
-    vals2 = ["cases", "casesc", "deaths", "deathsc", 
-            "cases", "casesc", "deaths", "deathsc"]
+def generate_graph(df, filename, ratio):
     plt.style.use('seaborn-darkgrid')
-    plt.rcParams["figure.figsize"] = (24, 9) # (w, h)
-    xformatter = mdates.DateFormatter("%m-%d")
-    yformatter = ticker.StrMethodFormatter('{x:,.0f}')
+    g = sns.FacetGrid(df, row="variable", col="state", sharey=False, height=ratio[0], aspect=ratio[1])
+    g = g.map(plt.plot, "date", "value", marker='o', markersize=0.7)
+    xformatter = mdates.DateFormatter("%m/%d")
+    g.axes[0,0].xaxis.set_major_formatter(xformatter)
+    plt.tight_layout()
+    plt.savefig(filename)
 
 
-    for i in range(6):
-        plt.subplot(3, 2, i+1)
-        plt.plot('date', vals1[i], data = df[df.state == states[i]])
-        plt.plot('date', vals2[i], data = df[df.state == states[i]])
-        plt.title(plot_titles[i])
-        plt.gca().xaxis.set_major_formatter(xformatter)
-        plt.gca().yaxis.set_major_formatter(yformatter)
-        plt.legend()
-
-    plt.savefig("graph")
+# In[49]:
 
 
-# In[5]:
+def read_data():
+    states = pd.read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv")
+    usa = pd.read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us.csv")
+    usa['state'] = "USA"
+    return pd.concat([states, usa], ignore_index=True, sort=False)
 
 
-def calcmerge(state, data):
-    date = data[data['state']==state].date
-    cases = data[data['state']==state].cases.to_numpy()
-    deaths = data[data['state']==state].deaths.to_numpy()
-    casesd = doubling(cases)
-    deathsd = doubling(deaths)
-    zipped = zip(date, cases, deaths, casesd, deathsd)
-    return zipped
+# In[54]:
 
 
-# In[6]:
+states = ["Massachusetts", "USA"]# , "New York"]# , "New York", "District of Columbia", "California"]
+variables = ["deathsd"]
+df = read_data()
+df1 = compute(df, states, variables)
+generate_graph(df1, "graph1", [3,2])
+
+states = ["District of Columbia", "California", "Florida", "Illinois", "New York"]
+variables = ["deathsd", "casesd", "deaths", "cases"]
+df1 = compute(df, states, variables)
+generate_graph(df1, "graph2", [2,2])
+
+             
 
 
-def graphrow(df, state):
-    plt.subplot(1, 2, 1)
-    plt.title(state + " count (lower is better)")
-    xformatter = mdates.DateFormatter("%m-%d")
-    yformatter = ticker.StrMethodFormatter('{x:,.0f}')
-    
-    plt.plot(df.date, df['cases'])
-    plt.plot(df.date, df['deaths'])
-    plt.gca().xaxis.set_major_formatter(xformatter)
-    plt.gca().yaxis.set_major_formatter(yformatter)
-    plt.legend(['cases', 'deaths'])
 
-    plt.subplot(1, 2, 2)
-    plt.title("days to double (higher is better)")
-    plt.plot(df.date, df['dbl cas'])
-    plt.plot(df.date, df['dbl deat'])
-    plt.gca().xaxis.set_major_formatter(xformatter)
-    plt.gca().yaxis.set_major_formatter(yformatter)
-    plt.legend(['cases', 'deaths'])
-    plt.savefig("graph" + state.replace(" ", "").lower())
-    plt.clf()
-
-
-# In[7]:
-
-
-def graphdbl(dta, state):
-    r = calcmerge(state, dta)
-    df = pd.DataFrame(r, columns=['date', 'cases', 'deaths', 'dbl cas', 'dbl deat'])
-    graphrow(df, state)
-
-
-# In[8]:
-
-
-def graphprep():
-    plt.rcParams["figure.figsize"] = (10, 3) # (w, h)
-    plt.style.use('seaborn-darkgrid')
-
-
-# In[10]:
-
-
-d = readfile()
-graphprep()
-graphdbl(d,'New York')
-graphdbl(d,'Massachusetts')
-graphdbl(d,'District of Columbia')
-graphdbl(d,'California')
 
 
 # In[ ]:
