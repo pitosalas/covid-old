@@ -85,11 +85,15 @@ df = read_data()
 df1 = compute(df, states, variables)
 generate_graph(df1, "graph1", [3,2])
 
-states = ["District of Columbia", "California", "Florida", "Illinois", "New York"]
+states = ["District of Columbia", "California", "Florida"]
 variables = ["deathsd", "casesd", "deaths", "cases"]
 df1 = compute(df, states, variables)
 generate_graph(df1, "graph2", [2,2])
 
+states = ["Illinois", "New York"]
+variables = ["deathsd", "casesd", "deaths", "cases"]
+df1 = compute(df, states, variables)
+generate_graph(df1, "graph3", [2,2])
              
 
 
