@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[18]:
+# In[2]:
 
 
 import pandas as pd
@@ -13,7 +13,13 @@ import numpy as np
 from datetime import datetime
 
 
-# In[43]:
+# In[ ]:
+
+
+
+
+
+# In[3]:
 
 
 def compute(df, states, variables):
@@ -25,16 +31,11 @@ def compute(df, states, variables):
     df = df.assign(casesd=df.groupby('state')['cases'].apply(doubling))
     df['date'] = pd.to_datetime(df['date'])
     df = df.melt(id_vars=['date', 'state'])
-#     df['stat'] = df['variable'].replace({
-#         'deaths' : 'total deaths',
-#         'cases'  : 'total cases',
-#         'deathsd' : 'days to double (deaths) (higher is better)',
-#         'casesd' : 'days to double (cases) (higher is better)'})
     df = df[df.variable.isin(variables)]
     return df
 
 
-# In[44]:
+# In[4]:
 
 
 def read_data():
@@ -45,7 +46,7 @@ def read_data():
     return df
 
 
-# In[45]:
+# In[5]:
 
 
 def doubling(indata):
@@ -69,13 +70,13 @@ def doubling(indata):
     return outdata
 
 
-# In[55]:
+# In[11]:
 
 
 def generate_graph(df, states, variables, filename, ratio):
     sns.set()
     plt.style.use('seaborn-darkgrid')
-    g = sns.FacetGrid(df, row="variable", col="state", sharex=True, sharey=False, height=ratio[0], aspect=ratio[1])
+    g = sns.FacetGrid(df, row="variable", col="state", sharex=True, row_order=variables, sharey=False, height=ratio[0], aspect=ratio[1])
     g = g.map(plt.plot, "date", "value", marker='o', markersize=0.7)
     xformatter = mdates.DateFormatter("%m/%d")
     g.axes[0,0].xaxis.set_major_formatter(xformatter)
@@ -90,7 +91,7 @@ def generate_graph(df, states, variables, filename, ratio):
     plt.savefig(filename)
 
 
-# In[60]:
+# In[12]:
 
 
 df = read_data()
@@ -108,6 +109,12 @@ states = ["Illinois", "California", "Florida"]
 variables = ["deathsd", "casesd", "deaths", "cases"]
 df1 = compute(df, states, variables)
 generate_graph(df1, states, variables, "graph3", [2,2])
+
+
+# In[8]:
+
+
+df1
 
 
 # In[ ]:
