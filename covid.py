@@ -124,7 +124,7 @@ df = read_data()
 states = ["Massachusetts", "USA", "New York", "South Carolina", "District of Columbia", "Illinois"]# , "New York"]# , "New York", "District of Columbia", "California"]
 variables = ["casesd", "deathsd"]
 df1 = compute(df, states, variables)
-graph_b(df1, states, variables, "graph1", [2,2.5])
+graph_b(df1, states, variables, "graph1", [3,2.5])
 
 states = ["District of Columbia", "South Carolina"] # , "New York"]# , "New York", "District of Columbia", "California"]
 variables = ["cases", "deaths"]
