@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
+# In[1]:
 
 
 import pandas as pd
@@ -19,12 +19,12 @@ from datetime import datetime
 
 
 
-# In[3]:
+# In[2]:
 
 
 def compute(df, states, variables):
     df = df.loc[(df['state'].isin(states))]
-    df = df.loc[df['date'] > "2020-03-15"]
+    df = df.loc[df['date'] > "2020-04-01"]
     df = df.assign(casesc=df['cases'].diff(len(states)))
     df = df.assign(deathsc=df['deaths'].diff(len(states)))
     df = df.assign(deathsd=df.groupby('state')['deaths'].apply(doubling))
@@ -35,7 +35,7 @@ def compute(df, states, variables):
     return df
 
 
-# In[4]:
+# In[3]:
 
 
 def read_data():
@@ -46,7 +46,7 @@ def read_data():
     return df
 
 
-# In[5]:
+# In[4]:
 
 
 def doubling(indata):
@@ -70,10 +70,10 @@ def doubling(indata):
     return outdata
 
 
-# In[11]:
+# In[5]:
 
 
-def generate_graph(df, states, variables, filename, ratio):
+def graph_a(df, states, variables, filename, ratio):
     sns.set()
     plt.style.use('seaborn-darkgrid')
     g = sns.FacetGrid(df, row="variable", col="state", sharex=True, row_order=variables, sharey=False, height=ratio[0], aspect=ratio[1])
@@ -91,30 +91,53 @@ def generate_graph(df, states, variables, filename, ratio):
     plt.savefig(filename)
 
 
-# In[12]:
+# In[57]:
+
+
+def graph_b(df, states, variables, filename, ratio):
+    sns.set()
+    plt.style.use('seaborn-darkgrid')
+    g = sns.FacetGrid(df, col="variable", hue='state', sharex=True, row_order=variables, sharey=False, height=ratio[0], aspect=ratio[1])
+    g = g.map(plt.plot, "date", "value")
+    g.add_legend()
+    labelmap = {"deathsd": "Deaths Doubling (higher is better)", 
+                "deaths": "Deaths",
+                "cases": "Cases", 
+                "casesd": "Cases Doubling (higher is better)"}
+    for i in range(len(variables)):
+        g.axes[0,i].set_title(labelmap[variables[i]])
+    xformatter = mdates.DateFormatter("%m/%d")
+    xlocator = mdates.DayLocator(bymonthday=[1,5,10, 15, 20, 25])
+    ylocator = ticker.AutoLocator()
+    yformatter = ticker.FuncFormatter(lambda x, p: format(int(x), ','))
+    g.axes[0,0].xaxis.set_major_formatter(xformatter)
+    g.axes[0,0].xaxis.set_major_locator(xlocator)
+    g.axes[0,0].yaxis.set_major_formatter(yformatter)
+    g.axes[0,1].yaxis.set_major_formatter(yformatter)
+    plt.savefig(filename)
+
+
+# In[58]:
 
 
 df = read_data()
-states = ["Massachusetts", "USA"]# , "New York"]# , "New York", "District of Columbia", "California"]
+states = ["Massachusetts", "USA", "New York", "South Carolina", "District of Columbia", "Illinois"]# , "New York"]# , "New York", "District of Columbia", "California"]
 variables = ["casesd", "deathsd"]
 df1 = compute(df, states, variables)
-generate_graph(df1, states, variables, "graph1", [3,2])
+graph_b(df1, states, variables, "graph1", [4,2.5])
 
-states = ["New York", "Massachusetts", "District of Columbia"]
-variables = ["deathsd", "casesd", "deaths", "cases"]
+states = ["District of Columbia", "South Carolina"] # , "New York"]# , "New York", "District of Columbia", "California"]
+variables = ["cases", "deaths"]
 df1 = compute(df, states, variables)
-generate_graph(df1, states, variables, "graph2", [2,2])
+graph_b(df1, states, variables, "graph2", [4,2.5])
 
-states = ["Illinois", "California", "Florida"]
-variables = ["deathsd", "casesd", "deaths", "cases"]
+states = ["Massachusetts", "California", "Illinois", "Florida"]
 df1 = compute(df, states, variables)
-generate_graph(df1, states, variables, "graph3", [2,2])
+graph_b(df1, states, variables, "graph3", [4,2.5])
 
-
-# In[8]:
-
-
-df1
+states = ["USA", "New York"]
+df1 = compute(df, states, variables)
+graph_b(df1, states, variables, "graph4", [4,2.5])
 
 
 # In[ ]:
