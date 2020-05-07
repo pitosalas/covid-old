@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[12]:
+# In[127]:
 
 
 import pandas as pd
@@ -13,7 +13,7 @@ import numpy as np
 from datetime import datetime
 
 
-# In[117]:
+# In[142]:
 
 
 def compute(df, states, variables, start_date):
@@ -31,7 +31,7 @@ def compute(df, states, variables, start_date):
     return df
 
 
-# In[118]:
+# In[143]:
 
 
 def read_data():
@@ -42,7 +42,7 @@ def read_data():
     return df
 
 
-# In[119]:
+# In[144]:
 
 
 def doubling(indata):
@@ -66,30 +66,38 @@ def doubling(indata):
     return outdata
 
 
-# In[120]:
+# In[145]:
 
 
-def graph_a(df, states, variables, filename, ratio):
+def graph_b(df, states, variables, filename, ratio):
     sns.set()
     plt.style.use('seaborn-darkgrid')
-    g = sns.FacetGrid(df, row="variable", col="state", sharex=True, row_order=variables, sharey=False, height=ratio[0], aspect=ratio[1])
-    g = g.map(plt.plot, "date", "value", marker='o', markersize=0.7)
-    xformatter = mdates.DateFormatter("%m/%d")
-    g.axes[0,0].xaxis.set_major_formatter(xformatter)
-    g.set_titles("{col_name}", size=16)
+    g = sns.FacetGrid(df, col="variable", hue='state', sharex=True, col_order=variables, sharey=False, height=ratio[0], aspect=ratio[1])
+    g = g.map(plt.plot, "date", "value")
+    g.add_legend()
     labelmap = {"deathsd": "Deaths Doubling", 
                 "deaths": "Deaths",
                 "cases": "Cases", 
                 "casesd": "Cases Doubling",
                 "casesc": "New Cases", 
-                "deathsc": "New Deaths"}
+                "deathsc": "New Deaths",
+               "deathsr": "Deaths Rolling average",
+               "casesr": "Cases Rolling average"}
     for i in range(len(variables)):
-        g.axes[i,0].set_ylabel(labelmap[variables[i]])
-    plt.tight_layout()
+        g.axes[0,i].set_title(labelmap[variables[i]])
+#         g.axes[0,i].set_title(variables[i])
+    xformatter = mdates.DateFormatter("%m/%d")
+    xlocator = mdates.DayLocator(bymonthday=[1,5,10, 15, 20, 25])
+    ylocator = ticker.AutoLocator()
+    yformatter = ticker.FuncFormatter(lambda x, p: format(int(x), ','))
+    g.axes[0,0].xaxis.set_major_formatter(xformatter)
+    g.axes[0,0].xaxis.set_major_locator(xlocator)
+    g.axes[0,0].yaxis.set_major_formatter(yformatter)
+    g.axes[0,1].yaxis.set_major_formatter(yformatter)
     plt.savefig(filename)
 
 
-# In[121]:
+# In[146]:
 
 
 def test_data():
@@ -100,7 +108,7 @@ def test_data():
                          "deaths": [1,   3,    2,   6,   5,   25, 10,  30]}))
 
 
-# In[122]:
+# In[147]:
 
 
 def report_test():
@@ -111,7 +119,7 @@ def report_test():
     graph_b(y, states, variables, "graph1", [4,2.5])
 
 
-# In[123]:
+# In[148]:
 
 
 def report_row(df, states, variables, date, filename, dimensions):
@@ -119,7 +127,7 @@ def report_row(df, states, variables, date, filename, dimensions):
     graph_b(df1, states, variables, filename, dimensions)
 
 
-# In[124]:
+# In[149]:
 
 
 def do_report1():
@@ -128,41 +136,20 @@ def do_report1():
     s2 = ["Massachusetts", "Florida", "California", "Washington"]
     v1 = ["casesc", "deathsc"]
     v2 = ["casesr", "deathsr"]
-    dt = "2020-04-01"
+    v3 = ["casesd", "deathsd"]
+    dt = "2020-03-15"
     dim = [4, 2.5]
     report_row(df, s1, v1, dt, "graph1", dim)
     report_row(df, s1, v2, dt, "graph2", dim)
     report_row(df, s2, v1, dt, "graph3", dim)
-    report_row(df, s2, v2, dt, "graph4", dim)               
+    report_row(df, s2, v2, dt, "graph4", dim)
+    report_row(df, s2, v3, dt, "graph5", dim)               
 
 
-# In[125]:
-
-
-def do_report2():
-    df = read_data()
-    s1 = ["USA", "New York"]
-    v1 = ["deaths", "deathsc", "deathsr"]
-    dt = "2020-04-01"
-    dim = [4, 2.5]
-    report_row(df, s1, v1, dt, "graph1", dim)
-    v1 = ["cases", "casesc", "casesr"]
-    report_row(df, s1, v1, dt, "graph2", dim)
-
-
-
-
-
-# In[126]:
+# In[150]:
 
 
 do_report1()
-
-
-# In[ ]:
-
-
-
 
 
 # In[ ]:
