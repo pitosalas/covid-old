@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[99]:
+# In[12]:
 
 
 import pandas as pd
@@ -13,13 +13,7 @@ import numpy as np
 from datetime import datetime
 
 
-# In[ ]:
-
-
-
-
-
-# In[201]:
+# In[117]:
 
 
 def compute(df, states, variables, start_date):
@@ -29,13 +23,15 @@ def compute(df, states, variables, start_date):
     df = df.assign(casesd=df.groupby('state')['cases'].apply(doubling))
     df = df.assign(casesc=df.groupby('state')['cases'].diff())
     df = df.assign(deathsc=df.groupby('state')['deaths'].diff())
+    df['casesr'] = df.groupby('state')['casesc'].rolling(7).mean().reset_index(0,drop=True)
+    df['deathsr'] = df.groupby('state')['deathsc'].rolling(7).mean().reset_index(0,drop=True)
     df['date'] = pd.to_datetime(df['date'])
     df = df.melt(id_vars=['date', 'state'])
     df = df[df.variable.isin(variables)]
     return df
 
 
-# In[207]:
+# In[118]:
 
 
 def read_data():
@@ -46,7 +42,7 @@ def read_data():
     return df
 
 
-# In[102]:
+# In[119]:
 
 
 def doubling(indata):
@@ -70,7 +66,7 @@ def doubling(indata):
     return outdata
 
 
-# In[103]:
+# In[120]:
 
 
 def graph_a(df, states, variables, filename, ratio):
@@ -93,36 +89,7 @@ def graph_a(df, states, variables, filename, ratio):
     plt.savefig(filename)
 
 
-# In[104]:
-
-
-def graph_b(df, states, variables, filename, ratio):
-    sns.set()
-    plt.style.use('seaborn-darkgrid')
-    g = sns.FacetGrid(df, col="variable", hue='state', sharex=True, col_order=variables, sharey=False, height=ratio[0], aspect=ratio[1])
-    g = g.map(plt.plot, "date", "value")
-    g.add_legend()
-    labelmap = {"deathsd": "Deaths Doubling", 
-                "deaths": "Deaths",
-                "cases": "Cases", 
-                "casesd": "Cases Doubling",
-                "casesc": "New Cases", 
-                "deathsc": "New Deaths"}
-    for i in range(len(variables)):
-        g.axes[0,i].set_title(labelmap[variables[i]])
-#         g.axes[0,i].set_title(variables[i])
-    xformatter = mdates.DateFormatter("%m/%d")
-    xlocator = mdates.DayLocator(bymonthday=[1,5,10, 15, 20, 25])
-    ylocator = ticker.AutoLocator()
-    yformatter = ticker.FuncFormatter(lambda x, p: format(int(x), ','))
-    g.axes[0,0].xaxis.set_major_formatter(xformatter)
-    g.axes[0,0].xaxis.set_major_locator(xlocator)
-    g.axes[0,0].yaxis.set_major_formatter(yformatter)
-    g.axes[0,1].yaxis.set_major_formatter(yformatter)
-    plt.savefig(filename)
-
-
-# In[202]:
+# In[121]:
 
 
 def test_data():
@@ -133,18 +100,18 @@ def test_data():
                          "deaths": [1,   3,    2,   6,   5,   25, 10,  30]}))
 
 
-# In[203]:
+# In[122]:
 
 
 def report_test():
     x = test_data()
     states = ["A", "B"]
-    variables = ["cases", "casesc", "casesd"]
+    variables = ["cases", "casesc", "casesr"]
     y = compute(x, states, variables, "2019-01-01")
     graph_b(y, states, variables, "graph1", [4,2.5])
 
 
-# In[204]:
+# In[123]:
 
 
 def report_row(df, states, variables, date, filename, dimensions):
@@ -152,7 +119,7 @@ def report_row(df, states, variables, date, filename, dimensions):
     graph_b(df1, states, variables, filename, dimensions)
 
 
-# In[229]:
+# In[124]:
 
 
 def do_report1():
@@ -160,22 +127,42 @@ def do_report1():
     s1 = ["USA", "New York"]
     s2 = ["Massachusetts", "Florida", "California", "Washington"]
     v1 = ["casesc", "deathsc"]
-    v2 = ["casesd", "deathsd"]
+    v2 = ["casesr", "deathsr"]
     dt = "2020-04-01"
     dim = [4, 2.5]
     report_row(df, s1, v1, dt, "graph1", dim)
     report_row(df, s1, v2, dt, "graph2", dim)
     report_row(df, s2, v1, dt, "graph3", dim)
-    report_row(df, s2, v2, dt, "graph4", dim)
+    report_row(df, s2, v2, dt, "graph4", dim)               
 
 
-               
+# In[125]:
 
 
-# In[230]:
+def do_report2():
+    df = read_data()
+    s1 = ["USA", "New York"]
+    v1 = ["deaths", "deathsc", "deathsr"]
+    dt = "2020-04-01"
+    dim = [4, 2.5]
+    report_row(df, s1, v1, dt, "graph1", dim)
+    v1 = ["cases", "casesc", "casesr"]
+    report_row(df, s1, v1, dt, "graph2", dim)
+
+
+
+
+
+# In[126]:
 
 
 do_report1()
+
+
+# In[ ]:
+
+
+
 
 
 # In[ ]:
