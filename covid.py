@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[99]:
 
 
 import pandas as pd
@@ -19,34 +19,34 @@ from datetime import datetime
 
 
 
-# In[2]:
+# In[201]:
 
 
-def compute(df, states, variables):
+def compute(df, states, variables, start_date):
     df = df.loc[(df['state'].isin(states))]
-    df = df.loc[df['date'] > "2020-04-01"]
-    df = df.assign(casesc=df['cases'].diff(len(states)))
-    df = df.assign(deathsc=df['deaths'].diff(len(states)))
+    df = df.loc[df['date'] > start_date]
     df = df.assign(deathsd=df.groupby('state')['deaths'].apply(doubling))
     df = df.assign(casesd=df.groupby('state')['cases'].apply(doubling))
+    df = df.assign(casesc=df.groupby('state')['cases'].diff())
+    df = df.assign(deathsc=df.groupby('state')['deaths'].diff())
     df['date'] = pd.to_datetime(df['date'])
     df = df.melt(id_vars=['date', 'state'])
     df = df[df.variable.isin(variables)]
     return df
 
 
-# In[3]:
+# In[207]:
 
 
 def read_data():
     states = pd.read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv")
     usa = pd.read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us.csv")
     usa['state'] = "USA"
-    df = pd.concat([states, usa], ignore_index=True, sort=False)
+    df = pd.concat([states, usa], sort=False)
     return df
 
 
-# In[4]:
+# In[102]:
 
 
 def doubling(indata):
@@ -70,7 +70,7 @@ def doubling(indata):
     return outdata
 
 
-# In[5]:
+# In[103]:
 
 
 def graph_a(df, states, variables, filename, ratio):
@@ -84,28 +84,33 @@ def graph_a(df, states, variables, filename, ratio):
     labelmap = {"deathsd": "Deaths Doubling", 
                 "deaths": "Deaths",
                 "cases": "Cases", 
-                "casesd": "Cases Doubling"}
+                "casesd": "Cases Doubling",
+                "casesc": "New Cases", 
+                "deathsc": "New Deaths"}
     for i in range(len(variables)):
         g.axes[i,0].set_ylabel(labelmap[variables[i]])
     plt.tight_layout()
     plt.savefig(filename)
 
 
-# In[57]:
+# In[104]:
 
 
 def graph_b(df, states, variables, filename, ratio):
     sns.set()
     plt.style.use('seaborn-darkgrid')
-    g = sns.FacetGrid(df, col="variable", hue='state', sharex=True, row_order=variables, sharey=False, height=ratio[0], aspect=ratio[1])
+    g = sns.FacetGrid(df, col="variable", hue='state', sharex=True, col_order=variables, sharey=False, height=ratio[0], aspect=ratio[1])
     g = g.map(plt.plot, "date", "value")
     g.add_legend()
-    labelmap = {"deathsd": "Deaths Doubling (higher is better)", 
+    labelmap = {"deathsd": "Deaths Doubling", 
                 "deaths": "Deaths",
                 "cases": "Cases", 
-                "casesd": "Cases Doubling (higher is better)"}
+                "casesd": "Cases Doubling",
+                "casesc": "New Cases", 
+                "deathsc": "New Deaths"}
     for i in range(len(variables)):
         g.axes[0,i].set_title(labelmap[variables[i]])
+#         g.axes[0,i].set_title(variables[i])
     xformatter = mdates.DateFormatter("%m/%d")
     xlocator = mdates.DayLocator(bymonthday=[1,5,10, 15, 20, 25])
     ylocator = ticker.AutoLocator()
@@ -117,33 +122,60 @@ def graph_b(df, states, variables, filename, ratio):
     plt.savefig(filename)
 
 
-# In[58]:
+# In[202]:
 
 
-df = read_data()
-states = ["Massachusetts", "USA", "New York", "South Carolina", "District of Columbia", "Illinois"]# , "New York"]# , "New York", "District of Columbia", "California"]
-variables = ["casesd", "deathsd"]
-df1 = compute(df, states, variables)
-graph_b(df1, states, variables, "graph1", [2.5,2.5])
-
-states = ["District of Columbia", "South Carolina"] # , "New York"]# , "New York", "District of Columbia", "California"]
-variables = ["cases", "deaths"]
-df1 = compute(df, states, variables)
-graph_b(df1, states, variables, "graph2", [2.5,2.5])
-
-states = ["Massachusetts", "California", "Illinois", "Florida"]
-df1 = compute(df, states, variables)
-graph_b(df1, states, variables, "graph3", [2.5,2.5])
-
-states = ["USA", "New York"]
-df1 = compute(df, states, variables)
-graph_b(df1, states, variables, "graph4", [2.5,2.5])
+def test_data():
+    return (pd.DataFrame({"date": ["2020-01-01","2020-01-01","2020-01-02","2020-01-02",
+                                   "2020-01-03","2020-01-03","2020-01-04","2020-01-04"],
+                         "state": ["A", "B", "A", "B", "A", "B", "A", "B"],
+                         "cases": [10,  30,   20,  50,  30,  70,  40, 100],
+                         "deaths": [1,   3,    2,   6,   5,   25, 10,  30]}))
 
 
-# In[ ]:
+# In[203]:
 
 
+def report_test():
+    x = test_data()
+    states = ["A", "B"]
+    variables = ["cases", "casesc", "casesd"]
+    y = compute(x, states, variables, "2019-01-01")
+    graph_b(y, states, variables, "graph1", [4,2.5])
 
+
+# In[204]:
+
+
+def report_row(df, states, variables, date, filename, dimensions):
+    df1 = compute(df, states, variables, date)
+    graph_b(df1, states, variables, filename, dimensions)
+
+
+# In[229]:
+
+
+def do_report1():
+    df = read_data()
+    s1 = ["USA", "New York"]
+    s2 = ["Massachusetts", "Florida", "California", "Washington"]
+    v1 = ["casesc", "deathsc"]
+    v2 = ["casesd", "deathsd"]
+    dt = "2020-04-01"
+    dim = [4, 2.5]
+    report_row(df, s1, v1, dt, "graph1", dim)
+    report_row(df, s1, v2, dt, "graph2", dim)
+    report_row(df, s2, v1, dt, "graph3", dim)
+    report_row(df, s2, v2, dt, "graph4", dim)
+
+
+               
+
+
+# In[230]:
+
+
+do_report1()
 
 
 # In[ ]:
