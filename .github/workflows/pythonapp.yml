@@ -34,7 +34,7 @@ jobs:
         pip install seaborn
     - name: Run daily
       run: |
-        python covid.py
+        source runit.sh
     - name: What files are there now |
       run: ls 
     - name: Save graph that was created
