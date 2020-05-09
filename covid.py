@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[127]:
+# In[1]:
 
 
 import pandas as pd
@@ -11,9 +11,10 @@ import matplotlib.dates as mdates
 import matplotlib.ticker as ticker
 import numpy as np
 from datetime import datetime
+import argparse
 
 
-# In[142]:
+# In[2]:
 
 
 def compute(df, states, variables, start_date):
@@ -31,7 +32,7 @@ def compute(df, states, variables, start_date):
     return df
 
 
-# In[143]:
+# In[3]:
 
 
 def read_data():
@@ -42,7 +43,7 @@ def read_data():
     return df
 
 
-# In[144]:
+# In[4]:
 
 
 def doubling(indata):
@@ -66,7 +67,7 @@ def doubling(indata):
     return outdata
 
 
-# In[145]:
+# In[5]:
 
 
 def graph_b(df, states, variables, filename, ratio):
@@ -97,7 +98,7 @@ def graph_b(df, states, variables, filename, ratio):
     plt.savefig(filename)
 
 
-# In[146]:
+# In[6]:
 
 
 def test_data():
@@ -108,7 +109,7 @@ def test_data():
                          "deaths": [1,   3,    2,   6,   5,   25, 10,  30]}))
 
 
-# In[147]:
+# In[7]:
 
 
 def report_test():
@@ -119,7 +120,7 @@ def report_test():
     graph_b(y, states, variables, "graph1", [4,2.5])
 
 
-# In[148]:
+# In[8]:
 
 
 def report_row(df, states, variables, date, filename, dimensions):
@@ -127,7 +128,7 @@ def report_row(df, states, variables, date, filename, dimensions):
     graph_b(df1, states, variables, filename, dimensions)
 
 
-# In[149]:
+# In[9]:
 
 
 def do_report1():
@@ -146,10 +147,47 @@ def do_report1():
     report_row(df, s2, v3, dt, "graph5", dim)               
 
 
-# In[150]:
+# In[10]:
 
 
-do_report1()
+def do_report2():
+    df = read_data()
+    s1 = ["USA", "New York"]
+    s2 = ["Massachusetts", "Florida", "California", "Washington"]
+    v1 = ["casesc", "deathsc"]
+    v2 = ["casesr", "deathsr"]
+    v3 = ["casesd", "deathsd"]
+    dt = "2020-03-15"
+    dim = [4, 2.5]
+    report_row(df, s1, v1, dt, "graph1", dim)
+
+
+# In[11]:
+
+
+do_report2()
+
+
+# In[25]:
+
+
+parser = argparse.ArgumentParser(description='Generate COVID graphs')
+parser.add_argument("filename", action="store")
+parser.add_argument("--states", nargs="+", type=str)
+parser.add_argument("--vars", nargs="+", type=str)
+args = parser.parse_args()
+print(args)
+
+
+# In[27]:
+
+
+df = read_data()
+s1 = args.states
+v1 = args.vars
+dt = "2020-03-15"
+dim = [4, 2.5]
+report_row(df, s1, v1, dt, args.filename, dim)
 
 
 # In[ ]:
