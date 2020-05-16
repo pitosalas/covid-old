@@ -38,8 +38,9 @@ def compute(df, states, variables, start_date):
 def read_data():
     states = pd.read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv")
     usa = pd.read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us.csv")
+    today = pd.read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/live/us-states.csv")
     usa['state'] = "USA"
-    df = pd.concat([states, usa], sort=False)
+    df = pd.concat([states, usa, today], sort=False)
     return df
 
 
@@ -120,7 +121,7 @@ def report_test():
     graph_b(y, states, variables, "graph1", [4,2.5])
 
 
-# In[19]:
+# In[8]:
 
 
 def report_row(df, states, variables, date, filename, dimensions):
@@ -148,7 +149,7 @@ def do_report1():
     report_row(df, s2, v3, dt, "graph5", dim)               
 
 
-# In[10]:
+# In[14]:
 
 
 def do_report2():
@@ -163,7 +164,7 @@ def do_report2():
     report_row(df, s1, v1, dt, "graph1", dim)
 
 
-# In[33]:
+# In[15]:
 
 
 parser = argparse.ArgumentParser(description='Generate COVID graphs')
@@ -174,21 +175,21 @@ parser.add_argument("--vars", nargs="+", type=str)
 args = parser.parse_args()
 
 
-# In[34]:
+# In[17]:
 
 
 df = read_data()
 s1 = args.states
 v1 = args.vars
-dt = "2020-03-15"
+dt = "2020-04-01"
 dim = [4, 2.5]
 report_row(df, s1, v1, dt, args.filename, dim)
 
 
-# In[22]:
+# In[ ]:
 
 
-df
+
 
 
 # In[ ]:
