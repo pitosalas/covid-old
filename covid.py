@@ -120,10 +120,11 @@ def report_test():
     graph_b(y, states, variables, "graph1", [4,2.5])
 
 
-# In[8]:
+# In[19]:
 
 
 def report_row(df, states, variables, date, filename, dimensions):
+    print(states, variables, date, filename, dimensions)
     df1 = compute(df, states, variables, date)
     graph_b(df1, states, variables, filename, dimensions)
 
@@ -162,24 +163,18 @@ def do_report2():
     report_row(df, s1, v1, dt, "graph1", dim)
 
 
-# In[11]:
-
-
-do_report2()
-
-
-# In[25]:
+# In[33]:
 
 
 parser = argparse.ArgumentParser(description='Generate COVID graphs')
 parser.add_argument("filename", action="store")
 parser.add_argument("--states", nargs="+", type=str)
 parser.add_argument("--vars", nargs="+", type=str)
+#args = parser.parse_args('xxx --states Massachusetts Florida California --vars casesr deathsr'.split())
 args = parser.parse_args()
-print(args)
 
 
-# In[27]:
+# In[34]:
 
 
 df = read_data()
@@ -188,6 +183,12 @@ v1 = args.vars
 dt = "2020-03-15"
 dim = [4, 2.5]
 report_row(df, s1, v1, dt, args.filename, dim)
+
+
+# In[22]:
+
+
+df
 
 
 # In[ ]:
