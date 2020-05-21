@@ -17,9 +17,7 @@ import argparse
 # In[2]:
 
 
-def compute(df, states, variables, start_date):
-    df = df.loc[(df['state'].isin(states))]
-    df = df.loc[df['date'] > start_date]
+def process_nyt(df, include_variables):
     df = df.assign(deathsd=df.groupby('state')['deaths'].apply(doubling))
     df = df.assign(casesd=df.groupby('state')['cases'].apply(doubling))
     df = df.assign(casesc=df.groupby('state')['cases'].diff())
@@ -28,23 +26,60 @@ def compute(df, states, variables, start_date):
     df['deathsr'] = df.groupby('state')['deathsc'].rolling(7).mean().reset_index(0,drop=True)
     df['date'] = pd.to_datetime(df['date'])
     df = df.melt(id_vars=['date', 'state'])
-    df = df[df.variable.isin(variables)]
-    return df
+    df = df[df.variable.isin(include_variables)]
+    return df    
 
 
 # In[3]:
 
 
-def read_data():
-    states = pd.read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv")
-    usa = pd.read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us.csv")
-    today = pd.read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/live/us-states.csv")
+def read_nyt_data(start_date, include_states):
+    states = pd.read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv", parse_dates=True)
+    states = states.loc[(states['state'].isin(include_states))]
+    usa = pd.read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us.csv", parse_dates=True)
     usa['state'] = "USA"
-    df = pd.concat([states, usa, today], sort=False)
-    return df
+    nyt = pd.concat([states, usa], sort=False)
+    nyt = nyt.loc[nyt['date'] > start_date]
+    return nyt
 
 
 # In[4]:
+
+
+def read_cdc_data(start_date, states):
+    dt = (pd.read_csv("https://data.cdc.gov/api/views/xkkf-xrst/rows.csv?accessType=DOWNLOAD&bom=true&format=true",
+                     na_values=['(NA)', ''], thousands=',', parse_dates=['Week Ending Date']).fillna(0)
+      .query("Outcome == 'All causes'")
+      .query("Type == 'Predicted (weighted)'")
+      .rename(columns={'Excess Lower Estimate': 'excess', 'Week Ending Date': 'date', 'State':'state'})
+      .query("date > '" + start_date + "'")
+      .query("state in @states")
+      .melt(value_vars="excess", id_vars=["date", "state"])
+     )
+    return dt
+
+
+# In[5]:
+
+
+def process_cdc(df, start_date, include_variables, include_states):
+    df = df[df.variable.isin(include_variables)]
+    return df 
+
+
+# In[6]:
+
+
+def read_data(start_date, states, variables):
+    nyt = read_nyt_data(start_date, states)
+    nyt = process_nyt(nyt, variables)
+    cdc = read_cdc_data(start_date, states)
+    cdc = process_cdc(cdc, start_date, variables, states)
+    res = pd.concat([cdc, nyt], sort=False)
+    return res
+
+
+# In[7]:
 
 
 def doubling(indata):
@@ -68,7 +103,7 @@ def doubling(indata):
     return outdata
 
 
-# In[5]:
+# In[31]:
 
 
 def graph_b(df, states, variables, filename, ratio):
@@ -83,23 +118,55 @@ def graph_b(df, states, variables, filename, ratio):
                 "casesd": "Cases Doubling",
                 "casesc": "New Cases", 
                 "deathsc": "New Deaths",
-               "deathsr": "Deaths Rolling average",
-               "casesr": "Cases Rolling average"}
+                "excess": "Excess Deaths",
+               "deathsr": "New Deaths (rolling average)",
+               "casesr": "New Cases (rolling average)"}
     for i in range(len(variables)):
         g.axes[0,i].set_title(labelmap[variables[i]])
-#         g.axes[0,i].set_title(variables[i])
     xformatter = mdates.DateFormatter("%m/%d")
     xlocator = mdates.DayLocator(bymonthday=[1,5,10, 15, 20, 25])
     ylocator = ticker.AutoLocator()
     yformatter = ticker.FuncFormatter(lambda x, p: format(int(x), ','))
     g.axes[0,0].xaxis.set_major_formatter(xformatter)
     g.axes[0,0].xaxis.set_major_locator(xlocator)
-    g.axes[0,0].yaxis.set_major_formatter(yformatter)
-    g.axes[0,1].yaxis.set_major_formatter(yformatter)
+    g.axes[0]
+    [axis[0].yaxis.set_major_formatter(yformatter) for axis in g.axes]
+#     g.axes[0,0].yaxis.set_major_formatter(yformatter)
+#     g.axes[0,1].yaxis.set_major_formatter(yformatter)
     plt.savefig(filename)
 
 
-# In[6]:
+# In[35]:
+
+
+parser = argparse.ArgumentParser(description='Generate COVID graphs')
+parser.add_argument("filename", action="store")
+parser.add_argument("--states", nargs="+", type=str)
+parser.add_argument("--vars", nargs="+", type=str)
+args = parser.parse_args('xxx --states Massachusetts --vars  deaths deathsc deathsr'.split())
+#args = parser.parse_args()
+
+
+# In[36]:
+
+
+def report_row(df, states, variables, date, filename, dimensions):
+    print(states, variables, date, filename, dimensions)
+    graph_b(df, states, variables, filename, dimensions)
+
+
+# In[37]:
+
+
+states = args.states
+variables = args.vars
+startdate = "2020-03-15"
+dim = [4, 2.5]
+df = read_data(startdate, states, variables)
+report_row(df, states, variables, startdate, args.filename, dim)
+
+
+# In[12]:
 
 
 def test_data():
@@ -110,7 +177,7 @@ def test_data():
                          "deaths": [1,   3,    2,   6,   5,   25, 10,  30]}))
 
 
-# In[7]:
+# In[13]:
 
 
 def report_test():
@@ -121,75 +188,40 @@ def report_test():
     graph_b(y, states, variables, "graph1", [4,2.5])
 
 
-# In[8]:
+# In[22]:
 
 
-def report_row(df, states, variables, date, filename, dimensions):
-    print(states, variables, date, filename, dimensions)
-    df1 = compute(df, states, variables, date)
-    graph_b(df1, states, variables, filename, dimensions)
+a = [[1,2],[3,5]]
 
 
-# In[9]:
+# In[23]:
 
 
-def do_report1():
-    df = read_data()
-    s1 = ["USA", "New York"]
-    s2 = ["Massachusetts", "Florida", "California", "Washington"]
-    v1 = ["casesc", "deathsc"]
-    v2 = ["casesr", "deathsr"]
-    v3 = ["casesd", "deathsd"]
-    dt = "2020-03-15"
-    dim = [4, 2.5]
-    report_row(df, s1, v1, dt, "graph1", dim)
-    report_row(df, s1, v2, dt, "graph2", dim)
-    report_row(df, s2, v1, dt, "graph3", dim)
-    report_row(df, s2, v2, dt, "graph4", dim)
-    report_row(df, s2, v3, dt, "graph5", dim)               
+[x*10 for x in a[0]]
 
 
-# In[14]:
+# In[24]:
 
 
-def do_report2():
-    df = read_data()
-    s1 = ["USA", "New York"]
-    s2 = ["Massachusetts", "Florida", "California", "Washington"]
-    v1 = ["casesc", "deathsc"]
-    v2 = ["casesr", "deathsr"]
-    v3 = ["casesd", "deathsd"]
-    dt = "2020-03-15"
-    dim = [4, 2.5]
-    report_row(df, s1, v1, dt, "graph1", dim)
+a[0]
 
 
-# In[15]:
+# In[25]:
 
 
-parser = argparse.ArgumentParser(description='Generate COVID graphs')
-parser.add_argument("filename", action="store")
-parser.add_argument("--states", nargs="+", type=str)
-parser.add_argument("--vars", nargs="+", type=str)
-#args = parser.parse_args('xxx --states Massachusetts Florida California --vars casesr deathsr'.split())
-args = parser.parse_args()
+a[1]
 
 
-# In[17]:
+# In[30]:
 
 
-df = read_data()
-s1 = args.states
-v1 = args.vars
-dt = "2020-04-01"
-dim = [4, 2.5]
-report_row(df, s1, v1, dt, args.filename, dim)
+[row[1]*10 for row in a]
 
 
-# In[ ]:
+# In[29]:
 
 
-
+a
 
 
 # In[ ]:

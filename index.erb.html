@@ -13,43 +13,19 @@
         <h4> My Covid Panel</h4>
         <p>
           This data from The New York Times and is usually about 24 hours old.
-          These graphs and the programming were done by me, Pito Salas. Feel free to ask me for a copy! File generated at 2020-05-21 08:05:48 -0400.
+          These graphs and the programming were done by me, Pito Salas. Feel free to ask me for a copy! File generated at <%= Time.now %>.
         </p>
       </div>
     </div>
 
     <div class="row">
-      
+      <% Dir["*.png"].sort.each do |file| %>
       <div class="row">
         <div class="col-12">
-          <img class="img-fluid" src=graph1.png></>
+          <img class="img-fluid" src=<%= file %>></>
         </div>
       </div>
-    
-      <div class="row">
-        <div class="col-12">
-          <img class="img-fluid" src=graph2.png></>
-        </div>
-      </div>
-    
-      <div class="row">
-        <div class="col-12">
-          <img class="img-fluid" src=graph3.png></>
-        </div>
-      </div>
-    
-      <div class="row">
-        <div class="col-12">
-          <img class="img-fluid" src=graph4.png></>
-        </div>
-      </div>
-    
-      <div class="row">
-        <div class="col-12">
-          <img class="img-fluid" src=graph5.png></>
-        </div>
-      </div>
-    
+    <% end %>
   </div>
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
     integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
