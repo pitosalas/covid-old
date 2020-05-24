@@ -149,7 +149,7 @@ def graph_b(df, states, variables, filename, ratio):
     plt.savefig(filename)
 
 
-# In[24]:
+# In[35]:
 
 
 parser = argparse.ArgumentParser(description='Generate COVID graphs')
@@ -160,15 +160,24 @@ parser.add_argument("--vars", nargs="+", type=str)
 args = parser.parse_args()
 
 
-# In[25]:
+# In[39]:
+
+
+def print_spec(states, variables, date, filename, dimensions):
+    states_s = ', '.join(str(x) for x in states)
+    variables_s = ', '.join(str(x) for x in variables)
+    print("Graph start date: ", date, "- for ", states_s, "- showing ", variables_s)
+
+
+# In[40]:
 
 
 def report_row(df, states, variables, date, filename, dimensions):
-    print(states, variables, date, filename, dimensions)
+    print_spec(states, variables, date, filename, dimensions)
     graph_b(df, states, variables, filename, dimensions)
 
 
-# In[26]:
+# In[41]:
 
 
 statesmap = {"nc" : "North Carolina",
@@ -193,7 +202,7 @@ df = read_data(startdate, states, variables)
 report_row(df, states, variables, startdate, args.filename, dim)
 
 
-# In[22]:
+# In[ ]:
 
 
 def test_data():

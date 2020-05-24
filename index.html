@@ -2,55 +2,58 @@
 <html lang="en">
 
 <head>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
     integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 <body>
-
-  <div class="container">
+  <div class="container-fluid">
     <div class="row">
       <div class="col">
-        <h4> My Covid Panel</h4>
+        <h2> My Covid Panel</h2>
         <p>
-          This data from The New York Times and is usually about 24 hours old.
-          These graphs and the programming were done by me, Pito Salas. Feel free to ask me for a copy! File generated at 2020-05-21 08:05:48 -0400.
+          These graphs are built from data collected by the New York Times as well as from the CDC.
+          The NYT code is generally 24 hours old. The CDC data about excess deaths is 1 week old, but with the 
+          important caveat that data newer than about 3 weeks is revised several times as time goes on so you 
+          can't really rely on what you see that is more recent than 3 weeks. 
+        </p>
+        <p>
+          These graphs and the programming were done by me, Pito Salas. Feel free to ask me for a copy! File generated at 2020-05-24 08:13:36 -0400.
         </p>
       </div>
     </div>
 
+    
     <div class="row">
-      
-      <div class="row">
-        <div class="col-12">
-          <img class="img-fluid" src=graph1.png></>
-        </div>
+      <div class="col-10 offset-1">
+        <img class="img-fluid" src="out1.png">
+        <figcaption class="figure-caption">Graph start date:  2020-04-01 - for  New Hampshire, West Virginia, South Carolina, Washington - showing  excessh
+</figcaption>
       </div>
+    </div>
+
     
-      <div class="row">
-        <div class="col-12">
-          <img class="img-fluid" src=graph2.png></>
-        </div>
+    <div class="row">
+      <div class="col-10 offset-1">
+        <img class="img-fluid" src="out2.png">
+        <figcaption class="figure-caption">Graph start date:  2020-04-01 - for  New York, USA - showing  deathsr, casesr
+</figcaption>
       </div>
+    </div>
+
     
-      <div class="row">
-        <div class="col-12">
-          <img class="img-fluid" src=graph3.png></>
-        </div>
+    <div class="row">
+      <div class="col-10 offset-1">
+        <img class="img-fluid" src="out3.png">
+        <figcaption class="figure-caption">Graph start date:  2020-04-01 - for  Massachusetts, California, New Jersey - showing  deathsr, casesr
+</figcaption>
       </div>
-    
-      <div class="row">
-        <div class="col-12">
-          <img class="img-fluid" src=graph4.png></>
-        </div>
-      </div>
-    
-      <div class="row">
-        <div class="col-12">
-          <img class="img-fluid" src=graph5.png></>
-        </div>
-      </div>
-    
-  </div>
+    </div>
+
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
     integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
     crossorigin="anonymous"></script>

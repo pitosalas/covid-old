@@ -2,19 +2,15 @@
 <html lang="en">
 
 <head>
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
     integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 <body>
-  <div class="container-fluid">
+
+  <div class="container">
     <div class="row">
       <div class="col">
-        <h2> My Covid Panel</h2>
+        <h4> My Covid Panel</h4>
         <p>
           These graphs are built from data collected by the New York Times as well as from the CDC.
           The NYT code is generally 24 hours old. The CDC data about excess deaths is 1 week old, but with the 
@@ -27,27 +23,22 @@
       </div>
     </div>
 
-    <% output = `python3 covid.py out1 --states nh wv sc wa --vars excessh` %>
+    <%= `python3 covid.py excess --states nh wv --vars excessh` %>
     <div class="row">
-      <div class="col-10 offset-1">
-        <img class="img-fluid" src="out1.png">
+      <div class="col=12">
+        <img class="img-fluid" src="excess.png">
       </div>
     </div>
 
-    <% output = `python3 covid.py out2 --states ny usa --vars deathsr casesr` %>
     <div class="row">
-      <div class="col-10 offset-1">
-        <img class="img-fluid" src="out2.png">
+      <% Dir["*.png"].sort.each do |file| %>
+      <div class="row">
+        <div class="col-12">
+          <img class="img-fluid" src=<%= file %>></>
+        </div>
       </div>
-    </div>
-
-    <% output = `python3 covid.py out3 --states ma ca nj --vars deathsr casesr` %>
-    <div class="row">
-      <div class="col-10 offset-1">
-        <img class="img-fluid" src="out3.png">
-      </div>
-    </div>
-
+    <% end %>
+  </div>
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
     integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
     crossorigin="anonymous"></script>
