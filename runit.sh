@@ -1,7 +1,8 @@
 echo "[Running covid reports]"
 
-python3 covid.py graph1 --states USA  "New York"  --vars casesr  deathsr
-python3 covid.py graph2 --states Massachusetts "New Jersey" "New York" --vars casesr  deathsr
-python3 covid.py graph3 --states Texas Florida --vars casesr  deathsr
-python3 covid.py graph4 --states "District of Columbia" "South Carolina" "West Virginia" Texas --vars casesr  deathsr
-python3 covid.py graph5 --states California Washington --vars casesr  deathsr
+python3 covid.py graph1 --states usa ny --vars casesr  deathsr 
+python3 covid.py  graph2 --states ma nj ny --vars casesr  deathsr 
+python3 covid.py  graph3 --states tx fl --vars casesr  deathsr 
+python3 covid.py  graph4 --states dc sc wv tx --vars casesr  deathsr 
+python3 covid.py graph5 --states ca wa --vars casesr  deaths
+python3 covid.py xx --states ca nh --vars deaths deathsr

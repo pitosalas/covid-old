@@ -38,9 +38,10 @@ def read_nyt_data(start_date, include_states):
     states = states.loc[(states['state'].isin(include_states))]
     usa = pd.read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us.csv", parse_dates=True)
     usa['state'] = "USA"
-    nyt = pd.concat([states, usa], sort=False)
-    nyt = nyt.loc[nyt['date'] > start_date]
-    return nyt
+    if ("USA" in include_states):
+        states = pd.concat([states, usa], sort=False)
+    states = states.loc[states['date'] > start_date]
+    return states
 
 
 # In[4]:
@@ -51,10 +52,17 @@ def read_cdc_data(start_date, states):
                      na_values=['(NA)', ''], thousands=',', parse_dates=['Week Ending Date']).fillna(0)
       .query("Outcome == 'All causes'")
       .query("Type == 'Predicted (weighted)'")
-      .rename(columns={'Excess Lower Estimate': 'excess', 'Week Ending Date': 'date', 'State':'state'})
+      .rename(columns={'Excess Lower Estimate': 'excessl', 'Excess Higher Estimate': "excessh", 'Week Ending Date': 'date', 'State':'state'})
       .query("date > '" + start_date + "'")
       .query("state in @states")
-      .melt(value_vars="excess", id_vars=["date", "state"])
+      .set_index('date', drop=True)
+      .pivot(columns='state', values=['excessl', 'excessh'])
+      .resample('D')
+      .interpolate()
+      .stack(level=1)
+      .reset_index(level=1)
+      .reset_index('date')
+      .melt(id_vars=['date','state'])
      )
     return dt
 
@@ -62,12 +70,18 @@ def read_cdc_data(start_date, states):
 # In[5]:
 
 
+#read_cdc_data("2020-05-01", ["Florida", "South Carolina"])
+
+
+# In[6]:
+
+
 def process_cdc(df, start_date, include_variables, include_states):
     df = df[df.variable.isin(include_variables)]
     return df 
 
 
-# In[6]:
+# In[7]:
 
 
 def read_data(start_date, states, variables):
@@ -79,7 +93,7 @@ def read_data(start_date, states, variables):
     return res
 
 
-# In[7]:
+# In[18]:
 
 
 def doubling(indata):
@@ -103,7 +117,7 @@ def doubling(indata):
     return outdata
 
 
-# In[31]:
+# In[23]:
 
 
 def graph_b(df, states, variables, filename, ratio):
@@ -118,7 +132,8 @@ def graph_b(df, states, variables, filename, ratio):
                 "casesd": "Cases Doubling",
                 "casesc": "New Cases", 
                 "deathsc": "New Deaths",
-                "excess": "Excess Deaths",
+                "excessl": "Excess Deaths",
+                "excessh" : "Excess Deaths (h)",
                "deathsr": "New Deaths (rolling average)",
                "casesr": "New Cases (rolling average)"}
     for i in range(len(variables)):
@@ -131,23 +146,21 @@ def graph_b(df, states, variables, filename, ratio):
     g.axes[0,0].xaxis.set_major_locator(xlocator)
     g.axes[0]
     [axis[0].yaxis.set_major_formatter(yformatter) for axis in g.axes]
-#     g.axes[0,0].yaxis.set_major_formatter(yformatter)
-#     g.axes[0,1].yaxis.set_major_formatter(yformatter)
     plt.savefig(filename)
 
 
-# In[35]:
+# In[24]:
 
 
 parser = argparse.ArgumentParser(description='Generate COVID graphs')
 parser.add_argument("filename", action="store")
 parser.add_argument("--states", nargs="+", type=str)
 parser.add_argument("--vars", nargs="+", type=str)
-args = parser.parse_args('xxx --states Massachusetts --vars  deaths deathsc deathsr'.split())
-#args = parser.parse_args()
+#args = parser.parse_args('xxx --states ma fl --vars  excessl excessh'.split())
+args = parser.parse_args()
 
 
-# In[36]:
+# In[25]:
 
 
 def report_row(df, states, variables, date, filename, dimensions):
@@ -155,18 +168,32 @@ def report_row(df, states, variables, date, filename, dimensions):
     graph_b(df, states, variables, filename, dimensions)
 
 
-# In[37]:
+# In[26]:
 
 
-states = args.states
+statesmap = {"nc" : "North Carolina",
+             "wv" : "West Virginia",
+             "sc" : "South Carolina",
+             "dc" : "District of Columbia",
+             "ma" : "Massachusetts",
+             "nh" : "New Hampshire", 
+             "ny" : "New York",
+            "wa" : "Washington",
+            "nj": "New Jersey",
+            "ca" : "California",
+             "tx" : "Texas",
+             "fl" : "Florida",
+             "usa" : "USA"
+            }
+states = list(map(lambda state: statesmap[state], args.states))
 variables = args.vars
-startdate = "2020-03-15"
+startdate = "2020-04-01"
 dim = [4, 2.5]
 df = read_data(startdate, states, variables)
 report_row(df, states, variables, startdate, args.filename, dim)
 
 
-# In[12]:
+# In[22]:
 
 
 def test_data():
@@ -175,4 +202,10 @@ def test_data():
                          "state": ["A", "B", "A", "B", "A", "B", "A", "B"],
                          "cases": [10,  30,   20,  50,  30,  70,  40, 100],
                          "deaths": [1,   3,    2,   6,   5,   25, 10,  30]}))
+
+
+# In[ ]:
+
+
+
 
