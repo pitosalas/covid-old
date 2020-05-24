@@ -19,7 +19,6 @@ jobs:
     - uses: actions/setup-ruby@v1
       with:
         ruby-version: '2.6' # Version range or exact version of a Ruby version to use, using semvers version range syntax.
-    - run: erb index.erb.html > index.html
     - uses: actions/checkout@v2
     - name: Set up Python 3.8
       uses: actions/setup-python@v1
@@ -42,8 +41,7 @@ jobs:
         pip install matplotlib
         pip install seaborn
     - name: Run daily
-      run: |
-        source runit.sh
+      run: erb index.erb.html > index.html
     - name: What files are there now |
       run: ls 
     - name: Save graph that was created
