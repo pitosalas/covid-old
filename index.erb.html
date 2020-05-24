@@ -11,7 +11,7 @@
     integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 <body>
-  <div class="container-fluid">
+  <div class="container-md">
     <div class="row">
       <div class="col">
         <h2> My Covid Panel</h2>
@@ -47,6 +47,14 @@
         <img class="img-fluid" src="out3.png">
       </div>
     </div>
+
+    <% output = `python3 covid.py out4  --states nc wv sc dc nh wa --vars  excessl excessh` %>
+    <div class="row">
+      <div class="col-10 offset-1">
+        <img class="img-fluid" src="out4.png">
+      </div>
+    </div>
+
 
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
     integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
