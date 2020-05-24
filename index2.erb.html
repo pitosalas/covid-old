@@ -27,27 +27,20 @@
       </div>
     </div>
 
-    <% output = `python3 covid.py out1 --states nh wv sc wa --vars excessh` %>
+    <% output = `python3 covid.py excess --states nh wv sc wa --vars excessh` %>
     <div class="row">
-      <div class="col-10 offset-1">
-        <img class="img-fluid" src="out1.png">
+      <div class="col-12">
+        <div class="card">
+          <img class="img-fluid" src="excess.png">
+          <figcaption class="figure-caption"><%= output %></figcaption>
+          <div class="card-body">
+            Excess deaths compare the number of reported deaths in the current period against the same 
+            period last year. The concept gives an interesting view of things without actually having to
+            decide what the cause of death was.
+          </div>
+        </div>
       </div>
     </div>
-
-    <% output = `python3 covid.py out2 --states ny usa --vars deathsr casesr` %>
-    <div class="row">
-      <div class="col-10 offset-1">
-        <img class="img-fluid" src="out2.png">
-      </div>
-    </div>
-
-    <% output = `python3 covid.py out3 --states ma ca nj --vars deathsr casesr` %>
-    <div class="row">
-      <div class="col-10 offset-1">
-        <img class="img-fluid" src="out3.png">
-      </div>
-    </div>
-
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
     integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
     crossorigin="anonymous"></script>
