@@ -7,8 +7,8 @@ def command_parser():
     parser.add_argument("filename", action="store")
     parser.add_argument("--states", nargs="+", type=str)
     parser.add_argument("--vars", nargs="+", type=str)
-    args = parser.parse_args('xx1xx --states ak al --vars  excessl deathsr'.split())
-    #args = parser.parse_args()
+    #args = parser.parse_args('x11yx --states ak al --vars  excessl deathsr'.split())
+    args = parser.parse_args()
     return args
 
 def print_spec(states, variables, date, filename, dimensions):

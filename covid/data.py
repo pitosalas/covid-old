@@ -21,11 +21,30 @@ def read_cdc_data(start_date, states):
           )
     return dt
 
+def read_cdc_data1(start_date, include_states):
+    dt = (pd.read_csv("https://data.cdc.gov/api/views/xkkf-xrst/rows.csv?accessType=DOWNLOAD&bom=true&format=true",
+                        na_values=['(NA)', ''], thousands=',', parse_dates=['Week Ending Date']).fillna(0)
+            .query("Outcome == 'All causes'")
+            .query("Type == 'Predicted (weighted)'")
+            .rename(columns={'Excess Lower Estimate': 'excessl', 'Excess Higher Estimate': "excessh", 'Week Ending Date': 'date', 'State': 'state'})
+            .query("date > '" + start_date + "'")
+            .query("state in @include_states")
+            .set_index('date', drop=True)
+            )
+    return dt
 
-def process_cdc(df, start_date, include_variables, include_states):
-    df = df[df.variable.isin(include_variables)]
+
+def process_cdc(df, include_variables):
+    df = (df.pivot(columns='state', values=['excessl', 'excessh'])
+            .resample('D')
+            .interpolate(method='cubic')
+            .stack(level=1)
+            .reset_index(level=1)
+            .reset_index('date')
+            .melt(id_vars=['date', 'state'])
+            .query("variable in @include_variables")
+            )
     return df
-
 
 def read_nyt_data(start_date, include_states):
     states = pd.read_csv(
@@ -58,8 +77,8 @@ def process_nyt(df, include_variables):
 def read_data(start_date, states, variables):
     nyt = read_nyt_data(start_date, states)
     nyt = process_nyt(nyt, variables)
-    cdc = read_cdc_data(start_date, states)
-    cdc = process_cdc(cdc, start_date, variables, states)
+    cdc = read_cdc_data1(start_date, states)
+    cdc = process_cdc(cdc, variables)
     res = pd.concat([cdc, nyt], sort=False)
     return res
 
