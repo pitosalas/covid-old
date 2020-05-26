@@ -9,7 +9,7 @@ def graph_b(df, states, variables, filename, ratio):
     plt.style.use('seaborn-darkgrid')
     g = sns.FacetGrid(df, col="variable", hue='state', sharex=True, col_order=variables, sharey=False, height=ratio[0], aspect=ratio[1])
     g = g.map(plt.plot, "date", "value")
-    g.add_legend()
+    g.add_legend(fontsize='large', title_fontsize='30')
     labelmap = {"deathsd": "Deaths Doubling", 
                 "deaths": "Deaths",
                 "cases": "Cases", 
