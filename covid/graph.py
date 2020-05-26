@@ -7,9 +7,10 @@ import seaborn as sns
 def graph_b(df, states, variables, filename, ratio):
     sns.set()
     plt.style.use('seaborn-darkgrid')
+    plt.legend(fontsize='xx-large')
     g = sns.FacetGrid(df, col="variable", hue='state', sharex=True, col_order=variables, sharey=False, height=ratio[0], aspect=ratio[1])
     g = g.map(plt.plot, "date", "value")
-    g.add_legend(fontsize='large', title_fontsize='30')
+    g.add_legend()
     labelmap = {"deathsd": "Deaths Doubling", 
                 "deaths": "Deaths",
                 "cases": "Cases", 
@@ -27,6 +28,5 @@ def graph_b(df, states, variables, filename, ratio):
     yformatter = ticker.FuncFormatter(lambda x, p: format(int(x), ','))
     g.axes[0,0].xaxis.set_major_formatter(xformatter)
     g.axes[0,0].xaxis.set_major_locator(xlocator)
-    g.axes[0]
     [axis[0].yaxis.set_major_formatter(yformatter) for axis in g.axes]
     plt.savefig(filename)

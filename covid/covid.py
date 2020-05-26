@@ -1,14 +1,18 @@
 import data
 import graph
 import argparse
+import sys
 
 def command_parser():
     parser = argparse.ArgumentParser(description='Generate COVID graphs')
     parser.add_argument("filename", action="store")
     parser.add_argument("--states", nargs="+", type=str)
     parser.add_argument("--vars", nargs="+", type=str)
-    #args = parser.parse_args('x11yx --states ak al --vars  excessl deathsr'.split())
-    args = parser.parse_args()
+    print(sys.argv)
+    if len(sys.argv) == 1:
+        args = parser.parse_args('testout --states ak al --vars  excessl deathsr'.split())
+    else:
+        args = parser.parse_args()
     return args
 
 def print_spec(states, variables, date, filename, dimensions):
