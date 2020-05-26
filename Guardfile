@@ -22,5 +22,5 @@ guard :shell do
   watch(/(.*).txt/) {|m| `tail #{m[0]}` }
   #watch(/(.*).erb.html/) { |m| `erb #{m[0]}.erb.html > #{m[0]}.html`}
   watch(/(.*).erb.html/) { |m| `erb #{m[1]}.erb.html > #{m[1]}.html`}
-  watch(/(.*).py/) { |m| `python3 covid/covid.py`}
+  watch(/(.*).py/) { |m| `python3 covid/covid.py; open testout.png`}
 end
