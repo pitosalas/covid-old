@@ -27,12 +27,11 @@
       </div>
     </div>
 
-    <% `python3 covid/covid.py --data mydata --states wv sc nc dc ct usa nh vt ma ny nj --vars excessh excessl cases deaths casesr deaths deathsr` %>
-    <% `python3 covid/covid.py --data mydata --graph out1 --states nh ma ny nj --vars excessh` %>
-    <% `python3 covid/covid.py --graph out2 --data mydata --states ny usa nj --vars deathsr casesr` %>
-    <% `python3 covid/covid.py --graph out3 --data mydata  --states ma nh vt ct --vars  cases deaths` %>
-    <% `python3 covid/covid.py --graph out4 --data mydata  --states ma nh vt ct --vars deathsr casesr` %>
-    <% `python3 covid/covid.py --graph out5 --data mydata  --states wv sc nc dc --vars  excessl excessh` %>
+    <% output = `python3 covid/covid.py out1 --states nh ma ny nj --vars excessh` %>
+    <% output = `python3 covid/covid.py out2 --states ny usa nj --vars deathsr casesr` %>
+    <% output = `python3 covid/covid.py out3  --states ma nh ct --vars  cases deaths` %>
+    <% output = `python3 covid/covid.py out4 --states ma nh ct --vars deathsr casesr` %>
+    <% output = `python3 covid/covid.py out5  --states wv sc dc --vars  excessl excessh` %>
 
     <div class="row">
       <% Dir["*.png"].sort.each do |file| %>
