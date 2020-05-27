@@ -51,7 +51,8 @@ def doit():
                  "ct": "Connecticut",
                  "al": "Alabama",
                  "ak": "Arkansas",
-                 "vt": "Vermont"
+                 "vt": "Vermont",
+                 "me": "Maine"
                  }
     args = command_parser()
     states = list(map(lambda state: statesmap[state], args.states))
