@@ -26,7 +26,6 @@ def command_parser():
         args = parser.parse_args()
     return args
 
-
 def print_spec(states, variables, date, filename, dimensions):
     states_s = ', '.join(str(x) for x in states)
     variables_s = ', '.join(str(x) for x in variables)
@@ -35,27 +34,9 @@ def print_spec(states, variables, date, filename, dimensions):
 
 
 def doit():
-    statesmap = {"nc": "North Carolina",
-                 "wv": "West Virginia",
-                 "sc": "South Carolina",
-                 "dc": "District of Columbia",
-                 "ma": "Massachusetts",
-                 "nh": "New Hampshire",
-                 "ny": "New York",
-                 "wa": "Washington",
-                 "nj": "New Jersey",
-                 "ca": "California",
-                 "tx": "Texas",
-                 "fl": "Florida",
-                 "usa": "USA",
-                 "ct": "Connecticut",
-                 "al": "Alabama",
-                 "ak": "Arkansas",
-                 "vt": "Vermont",
-                 "me": "Maine"
-                 }
     args = command_parser()
-    states = list(map(lambda state: statesmap[state], args.states))
+    print(args)
+    states = args.states
     variables = args.vars
     datfilename = args.data[0] + ".csv"
     startdate = "2020-03-01"
