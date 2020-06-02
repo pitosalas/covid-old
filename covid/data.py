@@ -1,54 +1,92 @@
 import pandas as pd
 import numpy as np
 
+def float_convert1(df, cols):
+    df.loc[:, cols] = df.loc[:, cols].apply(
+        lambda x: x.str.replace(',', ""))
+    df = df.convert_dtypes()
+    return df
 
-def read_cdc_data(start_date, states):
-    dt = (pd.read_csv("https://data.cdc.gov/api/views/xkkf-xrst/rows.csv?accessType=DOWNLOAD&bom=true&format=true",
-                      na_values=['(NA)', ''], thousands=',', parse_dates=['Week Ending Date']).fillna(0)
-          .query("Outcome == 'All causes'")
-          .query("Type == 'Predicted (weighted)'")
-          .rename(columns={'Excess Lower Estimate': 'excessl', 'Excess Higher Estimate': "excessh", 'Week Ending Date': 'date', 'State': 'state'})
-          .query("date > '" + start_date + "'")
-          .query("state in @states")
-          .set_index('date', drop=True)
-          .pivot(columns='state', values=['excessl', 'excessh'])
-          .resample('D')
-          .interpolate(method='cubic')
-          .stack(level=1)
-          .reset_index(level=1)
-          .reset_index('date')
-          .melt(id_vars=['date', 'state'])
+def float_convert(df, cols):
+    df[cols]=df[cols].replace(',','',regex=True)
+    df[cols] = df[cols].astype(float)
+    return df
+
+def date_convert(df, cols):
+    df[cols] = df[cols].apply(pd.to_datetime)
+    return df
+
+def read_covidtracking_data(start_date, states):
+    df = (pd.read_csv("https://covidtracking.com/api/v1/states/daily.csv",
+    return df
+
+def prepare_covidtracking_data(df):
+    df = df.fillna(0)
+    df = date_convert(df, ["date"])
+                na_values=['(NA)', ''],
+                thousands=',')
+    .fillna(0)
+    .assign(date=lambda x: pd.to_datetime(x['date'], format="%Y%m%d"))
+    .query("date > @start_date")
+    .query("state in @states")
+    .set_index('date', drop=True)
+    .filter(["state", "date", "positive", "negative"])
+    )
+ 
+
+def process_covid(df, vars):
+    print("Process covid: " + ",".join(vars))
+    vars = list(set(vars) & set(["positive", "negative"]))
+    print(vars)
+    df = (df.reset_index()
+            .melt(value_vars=vars, id_vars=["state", "date"])
+            .query("variable in @vars")
           )
-    return dt
-
-def read_cdc_data1(start_date, include_states):
-    dt = (pd.read_csv("https://data.cdc.gov/api/views/xkkf-xrst/rows.csv?accessType=DOWNLOAD&bom=true&format=true",
-                        na_values=['(NA)', ''], thousands=',', parse_dates=['Week Ending Date']).fillna(0)
-            .query("Outcome == 'All causes'")
-            .query("Type == 'Predicted (weighted)'")
-            .rename(columns={'Excess Lower Estimate': 'excessl', 'Excess Higher Estimate': "excessh", 'Week Ending Date': 'date', 'State': 'state'})
-            .query("date > '" + start_date + "'")
-            .query("state in @include_states")
-            .set_index('date', drop=True)
-            )
-    return dt
+    print("Found records: ", len(df))
+    return df
 
 
-def process_cdc(df, include_variables):
+
+def read_cdc_data():
+    df = pd.read_csv(
+        "https://data.cdc.gov/api/views/xkkf-xrst/rows.csv?accessType=DOWNLOAD&bom=true&format=true")
+    return df
+
+
+def prepare_cdc_data(raw_df, start_date, include_states):
+    df = (raw_df.fillna(0)
+          .rename(columns={'Excess Lower Estimate': 'excessl', 'Excess Higher Estimate': "excessh", 'Week Ending Date': 'date', 'State': 'state'}))
+    df = float_convert(df, ["excessl", "excessh"])
+    df = date_convert(df, ["date"])
+    df['state'] = map_states(df)
+    df = (df.query("Outcome == 'All causes'")
+          .query("Type == 'Predicted (weighted)'")
+          .query("date > @start_date", engine='python')
+          .query("state in @include_states")
+          .set_index('date', drop=True)
+          )
+    return df
+
+
+def process_cdc_data(df, include_variables):
+    print("Process cdc: " + ",".join(include_variables))
     df = (df.pivot(columns='state', values=['excessl', 'excessh'])
             .resample('D')
-            .interpolate(method='cubic')
+            .interpolate(method='from_derivatives')
             .stack(level=1)
             .reset_index(level=1)
             .reset_index('date')
             .melt(id_vars=['date', 'state'])
             .query("variable in @include_variables")
-            )
+          )
+    print("Found records: ", len(df))
     return df
+
 
 def read_nyt_data(start_date, include_states):
     states = pd.read_csv(
         "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv", parse_dates=True)
+    states['state'] = map_states(states)
     states = states.loc[(states['state'].isin(include_states))]
     usa = pd.read_csv(
         "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us.csv", parse_dates=True)
@@ -60,6 +98,7 @@ def read_nyt_data(start_date, include_states):
 
 
 def process_nyt(df, include_variables):
+    print("Process nyt: " + ",".join(include_variables))
     df = df.assign(deathsd=df.groupby('state')['deaths'].apply(doubling))
     df = df.assign(casesd=df.groupby('state')['cases'].apply(doubling))
     df = df.assign(casesc=df.groupby('state')['cases'].diff())
@@ -71,15 +110,43 @@ def process_nyt(df, include_variables):
     df['date'] = pd.to_datetime(df['date'])
     df = df.melt(id_vars=['date', 'state'])
     df = df[df.variable.isin(include_variables)]
+    print("Found records: ", len(df))
     return df
+
+
+def map_states(df):
+    statesmap = {"North Carolina": "NC",
+                 "West Virginia": "WV",
+                 "South Carolina": "SC",
+                 "District of Columbia": "DC",
+                 "Massachusetts": "MA",
+                 "New Hampshire": "NH",
+                 "New York": "NY",
+                 "Washington": "WA",
+                 "New Jersey": "NJ",
+                 "California": "CA",
+                 "Texas": "TX",
+                 "Florida": "FL",
+                 "USA": "USA",
+                 "Connecticut": "CT",
+                 "Alabama": "AL",
+                 "Arkansas": "AK",
+                 "Vermont": "VT",
+                 "Maine": "ME",
+                 "Utah": "UT"
+                 }
+    return (df['state'].replace(statesmap))
 
 
 def read_data(start_date, states, variables):
     nyt = read_nyt_data(start_date, states)
     nyt = process_nyt(nyt, variables)
-    cdc = read_cdc_data1(start_date, states)
-    cdc = process_cdc(cdc, variables)
-    res = pd.concat([cdc, nyt], sort=False)
+    cdc_raw = read_cdc_data()
+    cdc_prep = prepare_cdc_data(cdc_raw, start_date, states)
+    cdc = process_cdc_data(cdc_prep, variables)
+    cv = read_covidtracking_data(start_date, states)
+    cv = process_covid(cv, variables)
+    res = pd.concat([cdc, nyt, cv], sort=False)
     return res
 
 
@@ -102,3 +169,35 @@ def doubling(indata):
                 count = count+1
     outdata = pd.Series(data=double, name=indata.name, index=indata.index)
     return outdata
+
+    # OLD STUFF
+    def read_cdc_data_used_to_be_1(start_date, include_states):
+        df = (pd.read_csv("https://data.cdc.gov/api/views/xkkf-xrst/rows.csv?accessType=DOWNLOAD&bom=true&format=true",
+                        na_values=['(NA)', ''], thousands=',', parse_dates=['Week Ending Date'])
+            .fillna(0)
+            .rename(columns={'Excess Lower Estimate': 'excessl', 'Excess Higher Estimate': "excessh", 'Week Ending Date': 'date', 'State': 'state'}))
+
+        df['state'] = map_states(df)
+        df = (df.query("Outcome == 'All causes'")
+            .query("Type == 'Predicted (weighted)'")
+            .query("date > '" + start_date + "'")
+            .assign(state=lambda x: map_states(x))
+            .query("state in @include_states")
+            .set_index('date', drop=True)
+            )
+        return 
+        
+    def read_cdc_data1(start_date, include_states):
+    dt = (pd.read_csv("https://data.cdc.gov/api/views/xkkf-xrst/rows.csv?accessType=DOWNLOAD&bom=true&format=true",
+                        na_values=['(NA)', ''], thousands=',', parse_dates=['Week Ending Date']).fillna(0)
+            .query("Outcome == 'All causes'")
+            .query("Type == 'Predicted (weighted)'")
+            .rename(columns={'Excess Lower Estimate': 'excessl', 'Excess Higher Estimate': "excessh", 'Week Ending Date': 'date', 'State': 'state'})
+            .query("date > @start_date")
+            .query("state in @include_states")
+           .set_index('date', drop=True)
+             )
+    return dt
+
+
+
