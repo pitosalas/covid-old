@@ -1,31 +1,38 @@
 import pandas as pd
 import numpy as np
 
-
-def float_convert(df, cols):
+def float_convert1(df, cols):
     df.loc[:, cols] = df.loc[:, cols].apply(
-        lambda x: x.str.replace(',', "").apply(pd.to_numeric))
+        lambda x: x.str.replace(',', ""))
+    df = df.convert_dtypes()
     return df
 
+def float_convert(df, cols):
+    df[cols]=df[cols].replace(',','',regex=True)
+    df[cols] = df[cols].astype(float)
+    return df
 
 def date_convert(df, cols):
     df[cols] = df[cols].apply(pd.to_datetime)
     return df
 
-
 def read_covidtracking_data(start_date, states):
-    dt = (pd.read_csv("https://covidtracking.com/api/v1/states/daily.csv",
-                      na_values=['(NA)', ''],
-                      thousands=',')
-          .fillna(0)
-          .assign(date=lambda x: pd.to_datetime(x['date'], format="%Y%m%d"))
-          .query("date > @start_date")
-          .query("state in @states")
-          .set_index('date', drop=True)
-          .filter(["state", "date", "positive", "negative"])
-          )
-    return dt
+    df = (pd.read_csv("https://covidtracking.com/api/v1/states/daily.csv",
+    return df
 
+def prepare_covidtracking_data(df):
+    df = df.fillna(0)
+    df = date_convert(df, ["date"])
+                na_values=['(NA)', ''],
+                thousands=',')
+    .fillna(0)
+    .assign(date=lambda x: pd.to_datetime(x['date'], format="%Y%m%d"))
+    .query("date > @start_date")
+    .query("state in @states")
+    .set_index('date', drop=True)
+    .filter(["state", "date", "positive", "negative"])
+    )
+ 
 
 def process_covid(df, vars):
     print("Process covid: " + ",".join(vars))
@@ -36,6 +43,13 @@ def process_covid(df, vars):
             .query("variable in @vars")
           )
     print("Found records: ", len(df))
+    return df
+
+
+
+def read_cdc_data():
+    df = pd.read_csv(
+        "https://data.cdc.gov/api/views/xkkf-xrst/rows.csv?accessType=DOWNLOAD&bom=true&format=true")
     return df
 
 
@@ -54,39 +68,16 @@ def prepare_cdc_data(raw_df, start_date, include_states):
     return df
 
 
-def read_cdc_data1(start_date, include_states):
-    df = (pd.read_csv("https://data.cdc.gov/api/views/xkkf-xrst/rows.csv?accessType=DOWNLOAD&bom=true&format=true",
-                      na_values=['(NA)', ''], thousands=',', parse_dates=['Week Ending Date'])
-          .fillna(0)
-          .rename(columns={'Excess Lower Estimate': 'excessl', 'Excess Higher Estimate': "excessh", 'Week Ending Date': 'date', 'State': 'state'}))
-
-    df['state'] = map_states(df)
-    df = (df.query("Outcome == 'All causes'")
-          .query("Type == 'Predicted (weighted)'")
-          .query("date > '" + start_date + "'")
-          .assign(state=lambda x: map_states(x))
-          .query("state in @include_states")
-          .set_index('date', drop=True)
-          )
-    return df
-
-
-def read_cdc_data():
-    df = pd.read_csv(
-        "https://data.cdc.gov/api/views/xkkf-xrst/rows.csv?accessType=DOWNLOAD&bom=true&format=true")
-    return df
-
-
 def process_cdc_data(df, include_variables):
     print("Process cdc: " + ",".join(include_variables))
     df = (df.pivot(columns='state', values=['excessl', 'excessh'])
             .resample('D')
-            .interpolate(method='cubic')
-            # .stack(level=1)
-            # .reset_index(level=1)
-            # .reset_index('date')
-            # .melt(id_vars=['date', 'state'])
-            # .query("variable in @include_variables")
+            .interpolate(method='from_derivatives')
+            .stack(level=1)
+            .reset_index(level=1)
+            .reset_index('date')
+            .melt(id_vars=['date', 'state'])
+            .query("variable in @include_variables")
           )
     print("Found records: ", len(df))
     return df
@@ -178,3 +169,35 @@ def doubling(indata):
                 count = count+1
     outdata = pd.Series(data=double, name=indata.name, index=indata.index)
     return outdata
+
+    # OLD STUFF
+    def read_cdc_data_used_to_be_1(start_date, include_states):
+        df = (pd.read_csv("https://data.cdc.gov/api/views/xkkf-xrst/rows.csv?accessType=DOWNLOAD&bom=true&format=true",
+                        na_values=['(NA)', ''], thousands=',', parse_dates=['Week Ending Date'])
+            .fillna(0)
+            .rename(columns={'Excess Lower Estimate': 'excessl', 'Excess Higher Estimate': "excessh", 'Week Ending Date': 'date', 'State': 'state'}))
+
+        df['state'] = map_states(df)
+        df = (df.query("Outcome == 'All causes'")
+            .query("Type == 'Predicted (weighted)'")
+            .query("date > '" + start_date + "'")
+            .assign(state=lambda x: map_states(x))
+            .query("state in @include_states")
+            .set_index('date', drop=True)
+            )
+        return 
+        
+    def read_cdc_data1(start_date, include_states):
+    dt = (pd.read_csv("https://data.cdc.gov/api/views/xkkf-xrst/rows.csv?accessType=DOWNLOAD&bom=true&format=true",
+                        na_values=['(NA)', ''], thousands=',', parse_dates=['Week Ending Date']).fillna(0)
+            .query("Outcome == 'All causes'")
+            .query("Type == 'Predicted (weighted)'")
+            .rename(columns={'Excess Lower Estimate': 'excessl', 'Excess Higher Estimate': "excessh", 'Week Ending Date': 'date', 'State': 'state'})
+            .query("date > @start_date")
+            .query("state in @include_states")
+           .set_index('date', drop=True)
+             )
+    return dt
+
+
+

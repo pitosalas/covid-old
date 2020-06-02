@@ -12,6 +12,10 @@
     "python.testing.unittestEnabled": false,
     "python.testing.pytestArgs": [
         "covid"
+        "-s",
+        "-o",
+        "junit_family=xunit1",
     ],
+    "python.testing.pytestEnabled": `true,`
     "python.linting.enabled": false
 }

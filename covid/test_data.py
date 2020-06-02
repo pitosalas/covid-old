@@ -1,5 +1,5 @@
 import pandas as pd
-import data
+import data as data
 from datetime import datetime
 
 
@@ -17,32 +17,42 @@ class TestData:
                                  "Excess Higher Estimate": ["1",   "3",    "2",   "6",   "5",   "25", "10",  "30"],
                                  "Type": ["Predicted (weighted)", "Predicted (weighted)", "Predicted (weighted)", "Predicted (weighted)", "Predicted (weighted)", "Predicted (weighted)", "Predicted (weighted)", "Predicted (weighted)"],
                                  "Outcome": ["All causes", "All causes", "All causes", "All causes", "All causes", "All causes", "All causes", "All causes", ]})
-        self.states = ["UT"]
-        self.vars = ["excessh"]
-        self.sd = datetime.strptime("2020/04/30","%Y/%m/%d")
+
         #self.sd = "2020-05-02"
 
     def test_prepare_cdc_data(self):
-        df = data.prepare_cdc_data(self.cdc, self.sd, self.states)
-        assert(df.shape[0] == 2)
+        states = ["UT"]
+        sd = datetime.strptime("2020/04/30", "%Y/%m/%d")
+        df = data.prepare_cdc_data(self.cdc, sd, states)
+        assert(df.shape[0] == 4)
 
     def test_compute_cdc_data(self):
-        df = data.prepare_cdc_data(self.cdc, self.sd, self.states)
-        df1 = df.astype({'excessh':'float'})
-        df2 = data.process_cdc_data(df1, self.vars)
-        assert 1==1
+        states = ["UT"]
+        variables = ["excessh"]
+        sd = datetime.strptime("2020/05/01", "%Y/%m/%d")
+        df1 = data.prepare_cdc_data(self.cdc, sd, states)
+        df2 = data.process_cdc_data(df1, variables)
+        assert df2.shape[1] == 4 and df2.dtypes[0] == '<M8[ns]'
 
     def test_full_cdc(self):
+        states = ["UT"]
+        variabs = ["excessh"]
+        sd = datetime.strptime("2020/04/30", "%Y/%m/%d")
         cdc_raw = data.read_cdc_data()
-        cdc_prep = data.prepare_cdc_data(cdc_raw, self.sd, self.states)
-        cdc = data.process_cdc_data(cdc_prep, self.vars)
+        cdc_prep = data.prepare_cdc_data(cdc_raw, sd, states)
+        cdc = data.process_cdc_data(cdc_prep, variabs)
 
     def test_old_model(self):
-        sd = "2020/05/01"
-        df = data.read_cdc_data1(sd, self.states)
-        df = data.process_cdc_data(df, self.vars)
-        assert 1==1
+        sd = "2020-03-01"
+        states = ["Massachusetts"]
+        vars = ["excessh"]
+        dt1 = data.read_cdc_data1(sd, states)
+        dt2 = data.process_cdc_data(dt1, vars)
+        assert dt2.shape[0] > 20 and dt2.shape[1] == 4
 
-
-
+    def test_float_convert(self):
+        df = pd.DataFrame({"x": ["1,000", "2.3"], "z": [
+                          "a", "v"], "y": ["3,000", "30"]})
+        data.float_convert(df, ["x", "y"])
+        assert df.dtypes[0] == float
 
