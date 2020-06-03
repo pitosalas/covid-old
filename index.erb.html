@@ -28,12 +28,12 @@
     </div>
 
     <% `python3 covid/covid.py --data mydata --states wv sc nc dc ct usa nh vt ma ny nj --vars excessh excessl cases deaths casesr deathsr` %>
-    <% `python3 covid/covid.py --data mydata --graph out1 --states nh ma ny nj --vars excessh` %>
-    <% `python3 covid/covid.py --graph out2 --data mydata --states ny usa nj --vars cases deaths ` %>
-    <% `python3 covid/covid.py --graph out3 --data mydata --states ny usa nj --vars casesr deathsr` %>
-    <% `python3 covid/covid.py --graph out4 --data mydata  --states ma nh vt ct --vars cases deaths` %>
-    <% `python3 covid/covid.py --graph out5 --data mydata  --states ma nh vt ct --vars deathsr casesr` %>
-    <% `python3 covid/covid.py --graph out6 --data mydata  --states wv sc nc dc --vars excessl excessh` %>
+    <% `python3 covid/covid.py --data mydata --graph out1 --states NH MA NY NJ --vars excessh` %>
+    <% `python3 covid/covid.py --graph out2 --data mydata --states NY USA NJ --vars cases deaths ` %>
+    <% `python3 covid/covid.py --graph out3 --data mydata --states NY USA NJ --vars casesr deathsr` %>
+    <% `python3 covid/covid.py --graph out4 --data mydata  --states MA NH VT CT --vars cases deaths` %>
+    <% `python3 covid/covid.py --graph out5 --data mydata  --states MA NH VT CT --vars deathsr casesr` %>
+    <% `python3 covid/covid.py --graph out6 --data mydata  --states WV SC NC DC --vars excessl excessh` %>
 
     <div class="row">
       <% Dir["*.png"].sort.each do |file| %>
