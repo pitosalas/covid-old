@@ -2,7 +2,6 @@ import pandas as pd
 import data as data
 from datetime import datetime
 
-
 class TestData:
 
     def setup(self):
@@ -17,12 +16,28 @@ class TestData:
                                  "Excess Higher Estimate": ["1",   "3",    "2",   "6",   "5",   "25", "10",  "30"],
                                  "Type": ["Predicted (weighted)", "Predicted (weighted)", "Predicted (weighted)", "Predicted (weighted)", "Predicted (weighted)", "Predicted (weighted)", "Predicted (weighted)", "Predicted (weighted)"],
                                  "Outcome": ["All causes", "All causes", "All causes", "All causes", "All causes", "All causes", "All causes", "All causes", ]})
+        self.covid = pd.DataFrame({"date": ["20200401", "20200402", "20200403", "20200401", "20200402", "20200403"],
+                                   "state": ["MA","MA","MA","FL","FL", "FL"],
+                                   "positive": [100, 120, 130, 1000, 1100, 1200],
+                                   "negative": [1000, 1200, 1300, 10000,10100,10200]})
 
-        #self.sd = "2020-05-02"
+    def test_prepare_covid_data(self):
+        states = ["MA"]
+        sd = "2020/03/30"
+        df = data.prepare_covidtracking_data(self.covid, sd, states)
+        assert(df.shape[0] == 3)
+
+    def test_compute_covid_data(self):
+        states = ["MA"]
+        sd = "2020/03/30"
+        vars = ["positive"]
+        df_prep = data.prepare_covidtracking_data(self.covid, sd, states)
+        df_processed = data.process_covidtracking_data(df_prep, vars)
+        assert df_processed.shape[0] == 3
 
     def test_prepare_cdc_data(self):
         states = ["UT"]
-        sd = datetime.strptime("2020/04/30", "%Y/%m/%d")
+        sd = "2020/03/30"
         df = data.prepare_cdc_data(self.cdc, sd, states)
         assert(df.shape[0] == 4)
 
@@ -37,16 +52,17 @@ class TestData:
     def test_full_cdc(self):
         states = ["UT"]
         variabs = ["excessh"]
-        sd = datetime.strptime("2020/04/30", "%Y/%m/%d")
+        sd = "2020/04/30"
         cdc_raw = data.read_cdc_data()
         cdc_prep = data.prepare_cdc_data(cdc_raw, sd, states)
-        cdc = data.process_cdc_data(cdc_prep, variabs)
+        cdc_processed = data.process_cdc_data(cdc_prep, variabs)
+        assert cdc_processed.shape[0] == 15 and cdc_processed.shape[1]==4
 
     def test_old_model(self):
         sd = "2020-03-01"
         states = ["Massachusetts"]
         vars = ["excessh"]
-        dt1 = data.read_cdc_data1(sd, states)
+        dt1 = data.read_cdc_data_org(states, sd)
         dt2 = data.process_cdc_data(dt1, vars)
         assert dt2.shape[0] > 20 and dt2.shape[1] == 4
 
