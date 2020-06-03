@@ -13,6 +13,8 @@ def graph_b(df, states, variables, filename, ratio):
     g.add_legend()
     labelmap = {"deathsd": "Deaths Doubling",
                 "deaths": "Deaths",
+                "positive": "Positive Tests",
+                "negative": "Negative Tests",
                 "cases": "Cases",
                 "casesd": "Cases Doubling",
                 "casesc": "New Cases",
