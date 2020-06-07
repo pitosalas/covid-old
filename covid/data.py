@@ -31,14 +31,22 @@ def prepare_covidtracking_data(raw_df, start_date, states):
         .assign(date = lambda x: pd.to_datetime(x['date'], format="%Y%m%d"))
         .query("date > @start_date")
         .query("state in @states")
-        .set_index('date', drop=True)
-        .filter(["state", "positive", "negative"])
+        .sort_values(by='date', ascending=True)
     )
+    df =df.assign(positivec = df.groupby('state')['positive'].diff())
+    df =df.assign(negativec = df.groupby('state')['negative'].diff())
+    df['positiver']=df.groupby('state')['positivec'].rolling(
+        7).mean().reset_index(0, drop= True)
+    df['negativer']=df.groupby('state')['negativec'].rolling(
+        7).mean().reset_index(0, drop= True)
+    df = (df.set_index('date', drop=True)
+        .filter(["state", "positive", "negative","positiver", "negativer","positivec", "negativec",])
+        )
     return df
 
 def process_covidtracking_data(df, vars):
     print("Process covid: " + ",".join(vars))
-    vars=list(set(vars) & set(["positive", "negative"]))
+    vars=list(set(vars) & set(["positive", "negative","positiver", "negativer","positivec", "negativec"]))
     df=(df.reset_index()
             .melt(value_vars=vars, id_vars=["state", "date"])
             .query("variable in @vars")

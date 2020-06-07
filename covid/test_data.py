@@ -72,3 +72,11 @@ class TestData:
         data.float_convert(df, ["x", "y"])
         assert df.dtypes[0] == float
 
+    def test_covid_data_calcs(self):
+        states = ["MA"]
+        sd = "2020/03/30"
+        vars = ["positive", "positivec", "positiver"]
+        df_prep = data.prepare_covidtracking_data(self.covid, sd, states)
+        df_processed = data.process_covidtracking_data(df_prep, vars)
+        assert df_processed.shape == (9, 4)
+
