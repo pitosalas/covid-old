@@ -21,7 +21,7 @@ def command_parser():
     parser.add_argument("-d", "--data", nargs="+", type=str)
     if len(sys.argv) == 1 or run_from_ipython():
         args = parser.parse_args(
-            ' --data x --graph y --states AK AL MA --vars  positive excessl deathsr'.split())
+            ' --data x --graph y --states MA TX FL --vars   positive negative positiver negativer'.split())
     else:
         args = parser.parse_args()
     return args
