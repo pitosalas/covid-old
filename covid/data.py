@@ -147,7 +147,9 @@ def map_states(df):
                  "Illinois": "IL",
                  "Wisconsin": "WI",
                  "Wyoming": "WY",
-                 "Kansas" : "KA"
+                 "Kansas" : "KA",
+                 "Oklahoma" : "OK",
+                 "Arizona" : "AZ"
                  }
     return (df['state'].replace(statesmap))
 
