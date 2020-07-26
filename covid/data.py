@@ -139,7 +139,7 @@ def map_states(df):
                  "USA": "USA",
                  "Connecticut": "CT",
                  "Alabama": "AL",
-                 "Arkansas": "AK",
+                 "Arkansas": "AR",
                  "Vermont": "VT",
                  "Maine": "ME",
                  "Utah": "UT",
@@ -147,7 +147,7 @@ def map_states(df):
                  "Illinois": "IL",
                  "Wisconsin": "WI",
                  "Wyoming": "WY",
-                 "Kansas" : "KA",
+                 "Kansas" : "KS",
                  "Oklahoma" : "OK",
                  "Arizona" : "AZ"
                  }
