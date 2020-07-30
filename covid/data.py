@@ -130,6 +130,8 @@ def map_states(df):
                  "District of Columbia": "DC",
                  "Massachusetts": "MA",
                  "New Hampshire": "NH",
+                 "Maine": "ME",
+                 "Rhode Island": "RE",
                  "New York": "NY",
                  "Washington": "WA",
                  "New Jersey": "NJ",
@@ -149,7 +151,7 @@ def map_states(df):
                  "Wyoming": "WY",
                  "Kansas" : "KS",
                  "Oklahoma" : "OK",
-                 "Arizona" : "AZ"
+                 "Arizona" : "AZ",
                  }
     return (df['state'].replace(statesmap))
 
