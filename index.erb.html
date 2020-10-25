@@ -27,16 +27,10 @@
       </div>
     </div>
 
-    <% `python3 covid/covid.py --data mydata --states WV SC NC DC RI VT CT USA AK NH ME VT MA NY FL TX KA OK  --vars excessh excessl cases deaths casesr deathsr positive negative positiver negativer` %>
+    <% `python3 covid/covid.py --data mydata --states MA DC SC DC USA NH ME VT NJ  --vars excessh excessl cases deaths casesr deathsr positive negative positiver negativer hospitalizedCurrentlyr hospitalizedCurrently` %>
 
-    <% `python3 covid/covid.py --graph out1 --data mydata --states MA NH --vars casesr deathsr` %>
-    <% `python3 covid/covid.py --graph out2 --data mydata --states NY NJ USA --vars casesr deathsr` %>
-    <% `python3 covid/covid.py --graph out3 --data mydata  --states TX FL CA --vars casesr deathsr` %>
-    <% `python3 covid/covid.py --graph out4 --data mydata  --states AZ WA UT --vars casesr deathsr` %>
-    <% `python3 covid/covid.py --graph out5 --data mydata  --states NC SC --vars casesr deathsr` %>
-    <% `python3 covid/covid.py --graph out6 --data mydata  --states VT NH ME RI --vars casesr deathsr` %>
-    <% `python3 covid/covid.py --graph out7 --data mydata  --states SC NC CT MA FL TX KA --vars deaths` %>
-    <% `python3 covid/covid.py --graph out8 --data mydata  --states USA NY NJ --vars deaths` %>
+    <% `python3 covid/covid.py --graph out1 --data mydata --states MA NJ --vars hospitalizedCurrentlyr deathsr` %>
+    <% `python3 covid/covid.py --graph out2 --data mydata --states DC SC --vars hospitalizedCurrentlyr deathsr` %>
     
 
     <div class="row">
