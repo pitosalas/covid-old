@@ -21,7 +21,7 @@ def command_parser():
     parser.add_argument("-d", "--data", nargs="+", type=str)
     if len(sys.argv) == 1 or run_from_ipython():
         args = parser.parse_args(
-            ' --data x --graph y --states  SC NC TX OK FL --vars positiver deathsr'.split())
+            ' --data x --graph y --states MA --vars hospitalizedCurrently hospitalizedCurrentlyr hospitalizedCurrentlyc'.split())
     else:
         args = parser.parse_args()
     return args
@@ -40,7 +40,7 @@ def doit():
     states = args.states
     variables = args.vars
     datfilename = args.data[0] + ".csv"
-    startdate = "2020-08-01"
+    startdate = "2020-09-01"
     dim = [4, 2.5]
     if args.data:
         print("covid: saving data in " + datfilename)

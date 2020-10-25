@@ -35,18 +35,22 @@ def prepare_covidtracking_data(raw_df, start_date, states):
     )
     df =df.assign(positivec = df.groupby('state')['positive'].diff())
     df =df.assign(negativec = df.groupby('state')['negative'].diff())
+    df =df.assign(hospitalizedCurrentlyc = df.groupby('state')['hospitalizedCurrently'].diff())
     df['positiver']=df.groupby('state')['positivec'].rolling(
-        7).mean().reset_index(0, drop= True)
+        10).mean().reset_index(0, drop= True)
     df['negativer']=df.groupby('state')['negativec'].rolling(
-        7).mean().reset_index(0, drop= True)
+        10).mean().reset_index(0, drop= True)
+    df['hospitalizedCurrentlyr']=df.groupby('state')['hospitalizedCurrentlyc'].rolling(
+        10).mean().reset_index(0, drop= True)
+
     df = (df.set_index('date', drop=True)
-        .filter(["state", "positive", "negative","positiver", "negativer","positivec", "negativec",])
+        .filter(["state", "positive", "negative","positiver", "negativer","positivec", "negativec", "hospitalizedCurrently", "hospitalizedCurrentlyr", "hospitalizedCurrentlyc", "probableCases"])
         )
     return df
 
 def process_covidtracking_data(df, vars):
     print("Process covid: " + ",".join(vars))
-    vars=list(set(vars) & set(["positive", "negative","positiver", "negativer","positivec", "negativec"]))
+    vars=list(set(vars) & set(["positive", "negative","positiver", "negativer","positivec", "hospitalizedCurrently", "hospitalizedCurrentlyr", "hospitalizedCurrentlyc","negativec", "probableCases"]))
     df=(df.reset_index()
             .melt(value_vars=vars, id_vars=["state", "date"])
             .query("variable in @vars")
