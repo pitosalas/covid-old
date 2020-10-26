@@ -31,7 +31,8 @@
 
     <% `python3 covid/covid.py --graph out1 --data mydata --states MA NJ --vars hospitalizedCurrentlyr deathsr` %>
     <% `python3 covid/covid.py --graph out2 --data mydata --states DC SC --vars hospitalizedCurrentlyr deathsr` %>
-    
+    <% `python3 covid/covid.py --graph out2 --data mydata --states NY USA --vars hospitalizedCurrentlyr deathsr` %>
+
 
     <div class="row">
       <% Dir["*.png"].sort.each do |file| %>
