@@ -14,7 +14,7 @@ def graph_b(df, states, variables, filename, ratio):
     g = g.map(plt.plot, "date", "value", linewidth=3)
     # g.add_legend()
     labelmap = {"deathsd": "Deaths Doubling",
-                "deaths": "Deaths",
+                "deaths": "Total Deaths",
                 "positive": "Positive Tests",
                 "negative": "Negative Tests",
                 "positiver": "Positive Tests (rolling average)",
