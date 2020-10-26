@@ -29,9 +29,9 @@ def graph_b(df, states, variables, filename, ratio):
                 "excessh": "Excess Deaths (h)",
                 "deathsr": "New Deaths (rolling average)",
                 "casesr": "New Cases (rolling average)",
-                "hospitalizedCurrently": "Currently Hospitalized",
-                "hospitalizedCurrentlyr": "Currently Hospitalized (rolling average)",
-                "hospitalizedCurrentlyc": "Newly Hospitalized",
+                "hospitalizedCurrently": "Newly Hospitalized",
+                "hospitalizedCurrentlyr": "Newly (rolling average)",
+                "hospitalizedCurrentlyc": "Newly Hospitalized (change from yesterday)",
                 "probableCases": "Probable Cases"}
     for i in range(len(variables)):
         g.axes[0, i].set_title(labelmap[variables[i]], fontsize=20)
