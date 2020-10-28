@@ -30,7 +30,7 @@ def graph_b(df, states, variables, filename, ratio):
                 "deathsr": "New Deaths (rolling average)",
                 "casesr": "New Cases (rolling average)",
                 "hospitalizedCurrently": "Newly Hospitalized",
-                "hospitalizedCurrentlyr": "Newly (rolling average)",
+                "hospitalizedCurrentlyr": "Newly Hospitalized (rolling average)",
                 "hospitalizedCurrentlyc": "Newly Hospitalized (change from yesterday)",
                 "probableCases": "Probable Cases"}
     for i in range(len(variables)):
