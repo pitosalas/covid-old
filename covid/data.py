@@ -37,11 +37,11 @@ def prepare_covidtracking_data(raw_df, start_date, states):
     df =df.assign(negativec = df.groupby('state')['negative'].diff())
     df =df.assign(hospitalizedCurrentlyc = df.groupby('state')['hospitalizedCurrently'].diff())
     df['positiver']=df.groupby('state')['positivec'].rolling(
-        10).mean().reset_index(0, drop= True)
+        window=3).mean().reset_index(0, drop= True)
     df['negativer']=df.groupby('state')['negativec'].rolling(
-        10).mean().reset_index(0, drop= True)
+        window=3).mean().reset_index(0, drop= True)
     df['hospitalizedCurrentlyr']=df.groupby('state')['hospitalizedCurrentlyc'].rolling(
-        10).mean().reset_index(0, drop= True)
+        window=3).mean().reset_index(0, drop= True)
 
     df = (df.set_index('date', drop=True)
         .filter(["state", "positive", "negative","positiver", "negativer","positivec", "negativec", "hospitalizedCurrently", "hospitalizedCurrentlyr", "hospitalizedCurrentlyc", "probableCases"])
