@@ -45,7 +45,7 @@ jobs:
     - name: What files are there now |
       run: ls 
     - name: Save graph that was created
-      uses: stefanzweifel/git-auto-commit-action@v4.1.2
+      uses: tefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: Apply automatic changes
 
