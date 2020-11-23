@@ -42,7 +42,11 @@ jobs:
         pip install seaborn
     - name: Run daily
       run: erb index.erb.html > index.html
-    - name: What files are there now |
+    run: |
+      git config --local user.email "action@github.com"
+      git config --local user.name "GitHub Action"
+      git commit -m "Add changes" -a
+    - name: What files are there now
       run: ls -la; pwd
     - name: Push changes
       uses: ad-m/github-push-action@master
