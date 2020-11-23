@@ -44,10 +44,11 @@ jobs:
       run: erb index.erb.html > index.html
     - name: What files are there now |
       run: ls 
-    - name: Save graph that was created
-      uses: tefanzweifel/git-auto-commit-action@v4
+   - name: Push changes
+      uses: ad-m/github-push-action@master
       with:
-        commit_message: Apply automatic changes
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
 
 
 
