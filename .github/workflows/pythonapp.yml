@@ -46,8 +46,8 @@ jobs:
       run: ls -la; pwd
     - name: Push back to repo
       uses: mikeal/publish-to-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH_NAME: '' #optional defaults to master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BRANCH_NAME: '' #optional defaults to master
 
           
