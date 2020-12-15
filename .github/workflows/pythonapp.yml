@@ -49,11 +49,10 @@ jobs:
     - name: Run daily
       run: erb index.erb.html > index.html
     - name: What files are there now
-      run: ls -la; pwd; cd ..
+      run: ls -la; pwd
     - uses: EndBug/add-and-commit@v5
       with:
         message: 'updated png files'
         add: '*.png --force'
-        cwd: '/home/runner/work/covid/'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
