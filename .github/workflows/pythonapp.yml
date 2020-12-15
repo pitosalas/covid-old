@@ -48,10 +48,9 @@ jobs:
       run: erb index.erb.html > index.html
     - name: What files are there now
       run: ls -la; pwd; cd ..
-    - name: Push back to repo
-      uses: mikeal/publish-to-github-action@master
+    - uses: EndBug/add-and-commit@v5
+      with:
+        message: 'updated png files'
+        add: '*.png --force'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        BRANCH_NAME: '' #optional defaults to master
-
-          
