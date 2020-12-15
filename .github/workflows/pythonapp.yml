@@ -52,6 +52,6 @@ jobs:
       with:
         message: 'updated png files'
         add: '*.png --force'
-        cwd: './covid/'
+        cwd: '/home/runner/work/covid/'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
