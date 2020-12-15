@@ -54,5 +54,6 @@ jobs:
       with:
         message: 'updated png files'
         add: '*.png --force'
+        pwd: ".."
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
