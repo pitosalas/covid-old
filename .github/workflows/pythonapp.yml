@@ -12,8 +12,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Github version
-      run: git --version
     - uses: actions/checkout@v2
       with:
         persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
@@ -35,7 +33,7 @@ jobs:
     - uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: .
+        publish_dir: ./public
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
