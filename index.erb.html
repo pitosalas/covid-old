@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+  <div class="container-md">
+    <div class="row">
+      <div class="col-10 offset-1">
+        <h2> My Covid Panel</h2>
+        <p>
+          Graphs are built from data collected by the New York Times as well as from the CDC.
+          The NYT code is generally 24 hours old. The CDC data about excess deaths is 1 week old, but with the 
+          important caveat that data newer than about 3 weeks is revised several times as time goes on so you 
+          can't really rely on what you see that is more recent than 3 weeks. 
+        </p>
+        <p>
+          These graphs and the programming were done by me, Pito Salas. Feel free to ask me for a copy! File generated at <%= Time.now %>.
+        </p>
+      </div>
+    </div>
+
+    <% `python3 covid/covid.py --data mydata --states MA DC SC DC USA NH ME VT TX NJ  --vars excessh excessl cases deaths casesr deathsr positive negative positiver negativer hospitalizedCurrentlyr hospitalizedCurrently` %>
+
+    <% `python3 covid/covid.py --graph out1 --data mydata --states MA NJ  --vars hospitalizedCurrentlyr deathsr` %>
+    <% `python3 covid/covid.py --graph out2 --data mydata --states NH ME  --vars hospitalizedCurrentlyr deathsr` %>
+    <% `python3 covid/covid.py --graph out3 --data mydata --states TX AZ  --vars hospitalizedCurrentlyr deathsr` %>
+    <% `python3 covid/covid.py --graph out4 --data mydata --states DC SC  --vars hospitalizedCurrentlyr deathsr` %>
+    <% `python3 covid/covid.py --graph out5 --data mydata --states NY USA --vars hospitalizedCurrentlyr deathsr` %>
+
+
+    <div class="row">
+      <% Dir["*.png"].sort.each do |file| %>
+        <div class="row">
+          <div class="col-10 offset-1">
+            <img class="img-fluid" src=<%= file %>></>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
