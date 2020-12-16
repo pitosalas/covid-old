@@ -39,7 +39,8 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: .
     - name: Commit Files
-      run: | git config --local user.email "action@github.com"
+      run: | 
+        git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git commit -m "Add changes" -a
     - name: Push changes
