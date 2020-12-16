@@ -31,11 +31,6 @@ jobs:
     - name: Run daily
       run: erb index.erb.html > index.html
     - run: ls -la
-    - uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./foo
-    - run: ls -la
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
