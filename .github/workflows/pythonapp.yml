@@ -12,7 +12,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v2
       with:
         persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
         fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
@@ -28,21 +28,12 @@ jobs:
         pip install pandas
         pip install matplotlib
         pip install seaborn
-    - name: What files are there now
-      run: ls -la; pwd
     - name: Run daily
       run: erb index.erb.html > index.html
-    - name: What files are there now
-      run: ls -la; pwd
     - uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: .
-    - name: Commit Files
-      run: | 
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git commit -m "Add changes" -a
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
