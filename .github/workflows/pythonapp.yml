@@ -38,4 +38,4 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: .
     - name: Push changes
-      run: git add --all; git commit -m "funky"; git push
+      run: ls -la; git add --all; git commit -m "funky"; git push
