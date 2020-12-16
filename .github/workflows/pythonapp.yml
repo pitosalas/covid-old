@@ -30,6 +30,7 @@ jobs:
         pip install seaborn
     - name: Run daily
       run: erb index.erb.html > index.html
+    - run: pwd
     - run: mv *.png gh-pages; mv index.html gh-pages
     - name: Push changes
       uses: ad-m/github-push-action@master
