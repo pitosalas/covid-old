@@ -34,7 +34,7 @@ jobs:
     - uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: .
+        publish_dir: ./foo
     - run: ls -la
     - name: Push changes
       uses: ad-m/github-push-action@master
