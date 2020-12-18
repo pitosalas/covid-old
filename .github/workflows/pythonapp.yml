@@ -24,11 +24,13 @@ jobs:
         pip install seaborn
     - name: Run daily
       run: erb index.erb.html > index.html
-    - uses: peaceiris/actions-gh-pages@v3
+    - name: gh pages push
+      uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./public
-    - run: |
+    - name: Manual Push
+      run: |
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
         git add --all; git commit -m "action"
