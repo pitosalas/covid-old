@@ -13,13 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-      with:
-        persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
-        fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
-    - run: pwd; ls -la
     - uses: actions/setup-ruby@v1
       with:
-        ruby-version: '2.6' # Version range or exact version of a Ruby version to use, using semvers version range syntax.
+        ruby-version: '2.6'
     - name: Set up Python 3.8
       uses: actions/setup-python@v1
       with:
