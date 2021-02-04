@@ -306,7 +306,7 @@
 2768,2021-01-30,USA,deathsr,3147.0
 2769,2021-01-31,USA,deathsr,3154.0
 2770,2021-02-01,USA,deathsr,3160.1428571428573
-2771,2021-02-02,USA,deathsr,3061.4285714285716
+2771,2021-02-02,USA,deathsr,3061.714285714286
 0,2020-09-02,NY,hospitalizedCurrentlyr,
 1,2020-09-03,NY,hospitalizedCurrentlyr,
 2,2020-09-04,NY,hospitalizedCurrentlyr,
@@ -461,3 +461,4 @@
 151,2021-01-31,NY,hospitalizedCurrentlyr,-181.33333333333334
 152,2021-02-01,NY,hospitalizedCurrentlyr,-118.0
 153,2021-02-02,NY,hospitalizedCurrentlyr,-36.333333333333336
+154,2021-02-03,NY,hospitalizedCurrentlyr,35.333333333333336
